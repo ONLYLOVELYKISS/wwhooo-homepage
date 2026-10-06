@@ -22,9 +22,12 @@ const projects = [
 ];
 
 const app = document.querySelector('#app');
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 app.innerHTML = `
   <header class="nav shell">
     <a class="brand" href="#top" aria-label="返回首页"><span>W</span> wwhooo</a>
+    <button class="theme-toggle" type="button" aria-label="切换颜色主题" aria-pressed="false">☼</button>
     <nav aria-label="主导航">
       <a href="#about">关于</a>
       <a href="#projects">项目</a>
@@ -78,3 +81,23 @@ app.innerHTML = `
 
   <footer class="footer shell"><span>© ${new Date().getFullYear()} Linn</span><span>西安 · 中国</span><a href="#top">回到顶部 ↑</a></footer>
 `;
+
+
+const themeToggle = document.querySelector('.theme-toggle');
+const savedTheme = localStorage.getItem('wwhooo-theme');
+if (savedTheme === 'light') document.body.classList.add('light');
+
+function updateThemeButton() {
+  const isLight = document.body.classList.contains('light');
+  themeToggle.textContent = isLight ? '☾' : '☼';
+  themeToggle.setAttribute('aria-pressed', String(isLight));
+}
+
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  localStorage.setItem('wwhooo-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  updateThemeButton();
+});
+updateThemeButton();
+
+if (prefersReducedMotion) document.documentElement.classList.add('reduced-motion');
