@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node scripts/test-site.mjs"
+    "test": "npm run build && node scripts/test-site.mjs"
   },
   "devDependencies": {
     "vite": "^7.1.9"
