@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wwhooo.com/sitemap.xml

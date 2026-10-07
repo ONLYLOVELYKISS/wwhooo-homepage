@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Linn — 页面不存在</title>
+    <style>
+      :root{color-scheme:light;background:#f3f0e8;color:#11110f}*{box-sizing:border-box}body{margin:0;background:#f3f0e8;color:#11110f;font:11px/1.8 "DM Mono",ui-monospace,monospace}main{min-height:100svh;padding:12vh max(16px,8vw)}h1{margin:12vh 0 4vh;font:italic clamp(4rem,12vw,11rem)/.8 Georgia,serif;letter-spacing:-.08em;font-weight:400}p{color:#77766f}nav{display:flex;gap:24px;margin-top:8vh}a{color:#c65f32;text-decoration:none}a:hover{text-decoration:underline}
+    </style>
+    <script>
+      // Single Page Apps for GitHub Pages
+      // MIT License https://github.com/rafgraph/spa-github-pages
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+    <script>
+      // Redirect GitHub Pages 404 to SPA index.html with original path encoded
+      (function() {
+        var pathSegmentsToKeep = 0;
+        var l = window.location;
+        // If visiting a recognized SPA client-side route, redirect to index.html with query
+        var routes = ['/engine', '/engine/', '/profile', '/profile/', '/works', '/works/', '/toy', '/toy/', '/notes', '/notes/'];
+        var currentPath = l.pathname.replace(/\/$/, '') || '/';
+        var matched = routes.some(function(r) { return r.replace(/\/$/, '') === currentPath; });
+        if (matched) {
+          l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+          );
+        }
+      })();
+    </script>
+  </head>
+  <body><main><span>WW / LINN</span><h1>Page<br><i>not</i><br>found.</h1><p>页面不存在。<br>This page does not exist.</p><nav><a href="/">HOME</a><a href="/engine/">ENGINE</a><a href="/profile/">PROFILE</a><a href="/works/">WORKS</a></nav></main></body>
+</html>
