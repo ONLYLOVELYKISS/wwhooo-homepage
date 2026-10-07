@@ -18,5 +18,8 @@ assert.match(data, /sakura\.jpg/);
 assert.match(index, /src="\/src\/main\.js"/);
 assert.equal(JSON.parse(manifest).start_url, '/');
 await access('public/images/photography/sakura.jpg', constants.R_OK);
+await access('404.html', constants.R_OK);
+assert.match(await readFile('index.html','utf8'), /boot-fallback/);
+assert.match(await readFile('404.html','utf8'), /src=\"\/src\/main\.js\"/);
 for (const route of routes) assert.ok(route.startsWith('/'), `route ${route}`);
 console.log(`site checks passed: ${routes.length} routes, bilingual switch, project links, photography asset`);
