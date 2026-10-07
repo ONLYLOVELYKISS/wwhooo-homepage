@@ -1,53 +1,5 @@
-export const profile = {
-  name: 'Linn',
-  title: `做一些有用、好用，
-  也值得留下来的东西。`,
-  intro: '一个在网站、自动化工具与跨技术栈实验之间移动的人。这里不追求完整，只记录正在成形的部分。',
-  location: 'Xi’an, China',
-  status: 'Currently shaping wwhooo.com',
-};
-
-export const projects = [
-  {
-    number: '01',
-    title: 'wwhooo.com',
-    type: '个人主页 / 正在重构',
-    description: '从一个入口开始，整理项目、实践和那些还没有被命名的想法。',
-    year: '2026',
-    state: 'in progress',
-    url: 'https://github.com/ONLYLOVELYKISS/wwhooo-homepage',
-    accent: 'lime',
-  },
-  {
-    number: '02',
-    title: 'TOY',
-    type: 'Python / AI + Internet',
-    description: '一个阶段性生长的实验场：把好奇心拆成小工具，把小工具变成可运行的东西。',
-    year: '2025—',
-    state: 'exploring',
-    url: 'https://github.com/ONLYLOVELYKISS/TOY',
-    accent: 'blue',
-  },
-  {
-    number: '03',
-    title: 'chaoxing-sign-cli',
-    type: 'TypeScript / Automation',
-    description: '围绕具体使用场景构建的自动化工具，探索监测、签到和消息推送。',
-    year: 'archive',
-    state: 'field notes',
-    url: 'https://github.com/ONLYLOVELYKISS/chaoxing-sign-cli',
-    accent: 'orange',
-  },
-];
-
-export const fragments = [
-  { date: '2026.10', title: '重新开始设计一个个人主页', text: '首页不应该只是简历的另一种排版。它应该留下一个人的节奏。' },
-  { date: '2026.08', title: '网站持续更新', text: '公开的东西需要持续维护，哪怕只是一个更清楚的入口。' },
-  { date: '2026.05', title: '再次回到 TOY', text: '有些项目不是线性推进的，它们只是会在合适的时候重新亮起来。' },
-];
-
-export const links = [
-  { label: 'GitHub', url: 'https://github.com/ONLYLOVELYKISS' },
-  { label: '个人网站源码', url: 'https://github.com/ONLYLOVELYKISS/onlylovelykiss.github.io' },
-  { label: 'Email', url: 'mailto:hello@wwhooo.com' },
-];
+export const profile={statement:'A personal space for useful things, quiet observations, and work in progress.',bio:'我在网站、自动化工具与跨技术栈实验之间移动。这里是一个持续生长的个人入口。'};
+export const engineGroups=[['Search',[['Google','通用搜索','https://www.google.com/'],['Bing','搜索与图像','https://www.bing.com/'],['GitHub','代码与开源','https://github.com/']]],[ 'Build',[['MDN','Web 文档','https://developer.mozilla.org/'],['Can I Use','兼容性查询','https://caniuse.com/'],['Vite','前端构建','https://vite.dev/']]],[ 'AI / Tools',[['OpenAI','AI 工具','https://chatgpt.com/'],['Regex101','正则调试','https://regex101.com/'],['JSON Crack','数据可视化','https://jsoncrack.com/']]]];
+export const projects=[['wwhooo.com','PERSONAL HOMEPAGE','2026','以摄影、项目和个人档案为入口，重新组织一个人的公开空间。','https://github.com/ONLYLOVELYKISS/wwhooo-homepage'],['TOY','PYTHON / AI + INTERNET','2025—','阶段性生长的实验场：把好奇心拆成小工具，把小工具变成可运行的东西。','https://github.com/ONLYLOVELYKISS/TOY'],['chaoxing-sign-cli','TYPESCRIPT / AUTOMATION','ARCHIVE','围绕具体使用场景构建的自动化工具，探索监测、签到和消息推送。','https://github.com/ONLYLOVELYKISS/chaoxing-sign-cli']];
+export const photo={title:'Sakura / 夜间花卉',note:'在暗处保留一点温度。',image:'/images/photography/sakura.jpg'};
+export const links=[['GitHub','https://github.com/ONLYLOVELYKISS'],['Email','mailto:hello@wwhooo.com']];
