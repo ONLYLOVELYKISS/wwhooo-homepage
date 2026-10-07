@@ -10,7 +10,7 @@ const manifest = JSON.parse(await read('public/manifest.webmanifest'));
 const sitemap = await read('public/sitemap.xml');
 const routes = ['/', '/engine/', '/profile/', '/works/', '/toy/', '/notes/'];
 
-assert.match(main, /wwhooo-entry/);
+assert.doesNotMatch(main, /wwhooo-entry/);
 assert.match(main, /entry-slider/);
 assert.match(main, /type="range"/);
 assert.match(main, /route === '\/toy'/);

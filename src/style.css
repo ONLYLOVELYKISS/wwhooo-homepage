@@ -62,17 +62,23 @@ button { font:inherit; }
 .index-links h3 { margin:7px 0 0; font:400 clamp(2.4rem,5vw,5rem) var(--serif); }
 .index-links small { color:var(--muted); }
 .index-links b,.project-row>b,.tool-row>b { color:var(--accent); font-size:20px; font-weight:400; }
+.library-section { width:min(1320px,calc(100% - clamp(32px,7vw,96px))); margin:auto; padding:clamp(90px,12vw,160px) 0 clamp(110px,14vw,190px); }
+.library-head { display:flex; align-items:end; justify-content:space-between; gap:30px; margin-bottom:clamp(38px,5vw,70px); }
+.library-head .section-label { margin:0; }
+.library-tip { color:var(--muted); font:clamp(9px,.75vw,11px) var(--mono); letter-spacing:.06em; }
+.library-rail { display:flex; gap:16px; overflow-x:auto; overscroll-behavior-x:contain; padding-bottom:18px; scrollbar-width:thin; scrollbar-color:var(--accent) transparent; cursor:grab; }
+.library-rail:active { cursor:grabbing; }
+.library-rail:focus-visible { outline:2px solid var(--accent); outline-offset:8px; }
+.library-card { flex:0 0 clamp(220px,28vw,360px); min-height:clamp(250px,32vw,420px); display:flex; flex-direction:column; justify-content:space-between; padding:clamp(20px,2.5vw,32px); color:#fff; background:#171715; transition:transform .3s, filter .3s; }
+.library-card:hover { transform:translateY(-8px); filter:brightness(1.12); }
+.library-card.notes { background:#354037; }
+.library-card.sakura-card { background:linear-gradient(145deg,rgba(198,95,50,.35),rgba(17,17,15,.88)),url('/IMG_Sakura.JPG') center/cover; }
+.library-card.engine-card { background:#262421; }
+.library-card small { color:rgba(255,255,255,.64); }
+.library-card strong { max-width:260px; font:italic clamp(2rem,4vw,4rem)/.87 var(--serif); font-weight:400; }
+.library-card span { align-self:flex-end; color:var(--accent); font:10px var(--mono); }
+.subsite-strip,.subsite-links { display:none; }
 .statement-band { display:flex; justify-content:space-between; gap:30px; padding:30px 0 120px; border-top:1px solid var(--line); }
-.statement-band p { max-width:680px; margin:0; font:italic clamp(2rem,4vw,4.5rem)/.95 var(--serif); }
-.statement-band a { align-self:end; font:11px var(--mono); }
-.subsite-strip { display:grid; grid-template-columns:minmax(170px,200px) minmax(0,1fr); gap:clamp(40px,8%,110px); padding:30px 0 120px; border-top:1px solid var(--line); }
-.subsite-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
-.subsite-links a { position:relative; display:flex; flex-direction:column; min-height:180px; justify-content:space-between; padding:22px; border:1px solid var(--line); transition:background .2s, color .2s; }
-.subsite-links a:hover { background:var(--ink); color:var(--paper); }
-.subsite-links small { color:var(--accent); }
-.subsite-links strong { max-width:220px; font:italic 2rem/.95 var(--serif); font-weight:400; }
-.subsite-links b { align-self:flex-end; color:var(--accent); font-size:20px; font-weight:400; }
-.subsite-page { min-height:100svh; padding:150px max(16px,8vw) 100px; background:var(--ink); color:var(--paper); }
 .subsite-page.notes { background:#354037; }
 .subsite-page .back-link { display:inline-block; margin-bottom:90px; color:rgba(243,240,232,.65); font:11px var(--mono); }
 .subsite-page h1 { max-width:800px; margin:0; font:italic clamp(5rem,13vw,13rem)/.75 var(--serif); letter-spacing:-.07em; font-weight:400; }
@@ -130,13 +136,15 @@ footer a { color:var(--ink); }
   .primary-link { margin-top:48px; }
   .now { margin-top:55px; }
   .index-section { display:block; padding:100px 0 120px; }
+  .library-section { width:calc(100% - 32px); padding:100px 0 120px; }
+  .library-head { display:block; margin-bottom:45px; }
+  .library-tip { display:block; margin-top:24px; }
+  .library-card { flex-basis:78vw; min-height:58vw; }
+  .index-section { display:block; padding:100px 0 120px; }
   .section-label { margin-bottom:60px; }
   .index-links h3 { font-size:clamp(2.5rem,13vw,5rem); }
   .statement-band { display:block; padding-bottom:95px; }
   .statement-band a { display:block; margin-top:40px; }
-  .subsite-strip { display:block; padding:70px 0 95px; }
-  .subsite-links { display:block; }
-  .subsite-links a { min-height:150px; margin-bottom:12px; }
   .subsite-page { padding:115px 16px 70px; }
   .subsite-page .back-link { margin-bottom:65px; }
   .subsite-page h1 { font-size:clamp(4.5rem,19vw,8rem); }
