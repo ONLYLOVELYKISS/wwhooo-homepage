@@ -7,8 +7,8 @@ const readLanguage = () => { try { return localStorage.getItem('wwhooo-lang') ==
 const state = { lang: readLanguage(), entered: false };
 document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
 const copy = {
-  zh: { nav:['首页','工具','档案','作品'], eyebrow:'Linn / Personal engine', title:'把值得留下的，\n放在这里。', intro:'一个持续更新的个人入口：记录项目、工具、观察和正在形成的东西。', explore:'探索我的空间', status:'现在进行中', statusText:'维护个人网站，整理 TOY 实验场', index:'目录', indexText:'从正在使用的东西开始，逐步了解这个空间。', tools:'工具箱', profile:'关于我', works:'作品与记录', selected:'精选项目', photo:'一张照片', contact:'联系我', language:'EN', top:'回到顶部', lock:'重新进入', unlock:'滑动进入', unlockHint:'向右滑动 Sakura，进入个人引擎', unlocked:'准备进入', library:'个人库', libraryText:'项目、子站、工具和视觉记录，放在同一条可探索的轨道上。', dragExplore:'拖动或滚动浏览', open:'进入', back:'返回主站' },
-  en: { nav:['Home','Tools','Profile','Works'], eyebrow:'Linn / Personal engine', title:'Things worth\nkeeping, here.', intro:'A living personal entry point for projects, tools, observations, and things taking shape.', explore:'Explore the space', status:'Currently', statusText:'Maintaining this site and the TOY lab', index:'Index', indexText:'Start with the things in use and take a closer look around.', tools:'Toolbox', profile:'About me', works:'Works & notes', selected:'Selected projects', photo:'A photograph', contact:'Find me', language:'中', top:'Back to top', lock:'Enter again', unlock:'Slide to enter', unlockHint:'Slide Sakura to the right to enter the personal engine', unlocked:'Ready to enter', library:'Personal library', libraryText:'Projects, subsites, tools, and visual notes arranged on one open rail.', dragExplore:'Drag or scroll to explore', open:'Open', back:'Back home' }
+  zh: { nav:['首页','工具','档案','作品'], eyebrow:'Linn / Personal engine', title:'把值得留下的，\n放在这里。', intro:'一个持续更新的个人入口：记录项目、工具、观察和正在形成的东西。', explore:'探索我的空间', status:'现在进行中', statusText:'维护个人网站，整理 TOY 实验场', index:'目录', indexText:'从正在使用的东西开始，逐步了解这个空间。', tools:'工具箱', profile:'关于我', works:'作品与记录', selected:'精选项目', photo:'一张照片', contact:'联系我', language:'EN', top:'回到顶部', lock:'重新进入', unlock:'向上滑动进入', unlockHint:'向上轻扫 Sakura，进入个人引擎', unlocked:'准备进入', library:'个人库', libraryText:'项目、子站、工具和视觉记录，放在同一条可探索的轨道上。', dragExplore:'左右滑动浏览', open:'进入', back:'返回主站' },
+  en: { nav:['Home','Tools','Profile','Works'], eyebrow:'Linn / Personal engine', title:'Things worth\nkeeping, here.', intro:'A living personal entry point for projects, tools, observations, and things taking shape.', explore:'Explore the space', status:'Currently', statusText:'Maintaining this site and the TOY lab', index:'Index', indexText:'Start with the things in use and take a closer look around.', tools:'Toolbox', profile:'About me', works:'Works & notes', selected:'Selected projects', photo:'A photograph', contact:'Find me', language:'中', top:'Back to top', lock:'Enter again', unlock:'Swipe up to enter', unlockHint:'Swipe up on Sakura to enter the personal engine', unlocked:'Ready to enter', library:'Personal library', libraryText:'Projects, subsites, tools, and visual notes arranged on one open rail.', dragExplore:'Swipe left/right to explore', open:'Open', back:'Back home' }
 };
 const t = () => copy[state.lang];
 const text = (zh, en) => state.lang === 'zh' ? zh : en;
@@ -19,7 +19,32 @@ function header(active = '') {
 }
 function footer() { return `<footer><span>© 2026 LINN</span><span>WW / PERSONAL ENGINE</span><a href="#top">${t().top} ↑</a></footer>`; }
 function page(content, active) { return `${header(active)}<main id="top">${content}</main>${footer()}`; }
-function entryGate() { return `<section class="entry-gate" id="entry-gate" aria-label="${t().unlock}"><div class="gate-image"><img src="${photo.image}" alt="${photo.title}" fetchpriority="high"><div class="gate-vignette"></div></div><div class="gate-copy"><span class="kicker">WW / SAKURA ENTRY</span><p class="gate-status">${t().unlocked}</p><h1>${text('滑动进入<br><i>个人引擎。</i>', 'Slide into a<br><i>personal engine.</i>')}</h1><p class="gate-hint">${t().unlockHint}</p><div class="slider-wrap"><label class="sr-only" for="entry-slider">${t().unlock}</label><input id="entry-slider" type="range" min="0" max="100" value="0" aria-valuetext="${t().unlock}"><span class="slider-track"></span><span class="slider-label"><span>${t().unlock}</span><b>→</b></span></div><p class="gate-foot">${text('没有登录，只有一次主动进入。', 'No login, just a deliberate entrance.')}</p></div><b class="gate-mark">桜</b></section>`; }
+function entryGate() {
+  return `<section class="entry-gate" id="entry-gate" aria-label="${t().unlock}">
+    <div class="gate-image">
+      <img src="${photo.image}" alt="${photo.title}" fetchpriority="high">
+      <div class="gate-vignette"></div>
+    </div>
+    <div class="gate-copy">
+      <span class="kicker">WW / SAKURA ENTRY</span>
+      <p class="gate-status">${t().unlocked}</p>
+      <h1>${text('向上滑动<br><i>进入引擎。</i>', 'Swipe up into<br><i>personal engine.</i>')}</h1>
+      <p class="gate-hint">${t().unlockHint}</p>
+      <div class="slider-wrap swipe-up-wrap" id="swipe-trigger">
+        <label class="sr-only" for="entry-slider">${t().unlock}</label>
+        <input id="entry-slider" type="range" orient="vertical" min="0" max="100" value="0" aria-valuetext="${t().unlock}">
+        <div class="swipe-capsule">
+          <div class="swipe-thumb">
+            <span class="chevron">↑</span>
+          </div>
+          <span class="swipe-text">${t().unlock}</span>
+        </div>
+      </div>
+      <p class="gate-foot">${text('没有登录，只有一次主动进入。', 'No login, just a deliberate entrance.')}</p>
+    </div>
+    <b class="gate-mark">桜</b>
+  </section>`;
+}
 function libraryCard(site) { return `<a class="library-card ${site.tone}" href="${site.path}"><small>${site.name}</small><strong>${text(site.zh,site.en)}</strong><span>${t().open} ↗</span></a>`; }
 function homeContent() {
   return `<section class="engine-home ${state.entered ? 'is-unlocked' : 'is-locked'}">${entryGate()}<div class="home-content" aria-hidden="${!state.entered}"><section class="landing"><div class="landing-image"><img src="${photo.image}" alt="${photo.title}" loading="lazy"><div class="image-caption">${photo.title}<span>${photo.note}</span></div></div><div class="landing-copy"><p class="kicker">${t().eyebrow}</p><h2>${t().title.replace('\n','<br>')}</h2><p class="lead">${t().intro}</p><a class="primary-link" href="#library">${t().explore}<span>↓</span></a><div class="now"><span>${t().status}</span><strong>${t().statusText}</strong></div></div></section><section class="library-section" id="library"><div class="library-head"><div class="section-label"><span>01</span><h2>${t().library}</h2><p>${t().libraryText}</p></div><span class="library-tip">${t().dragExplore} ↔</span></div><div class="library-rail" tabindex="0" aria-label="${t().library}">${subsites.map(libraryCard).join('')}<a class="library-card sakura-card" href="/works/"><small>SAKURA / IMAGE</small><strong>${text('夜间花卉','Night bloom')}</strong><span>${t().open} ↗</span></a><a class="library-card engine-card" href="/engine/"><small>ENGINE / LINKS</small><strong>${text('常用入口','Everyday links')}</strong><span>${t().open} ↗</span></a></div></section><section class="index-section"><div class="section-label"><span>02</span><h2>${t().index}</h2><p>${t().indexText}</p></div><div class="index-links"><a href="/engine/"><span>01</span><div><small>${t().tools}</small><h3>ENGINE</h3></div><b>↗</b></a><a href="/profile/"><span>02</span><div><small>${t().profile}</small><h3>PROFILE</h3></div><b>↗</b></a><a href="/works/"><span>03</span><div><small>${t().works}</small><h3>WORKS</h3></div><b>↗</b></a></div></section><section class="statement-band"><p>“${text('技术是我靠近问题的方式，不是我介绍自己的全部。', 'Technology is how I get closer to problems, not the whole story of who I am.')}”</p><a href="/profile/">${t().profile} ↗</a></section></div>${state.entered ? `<button class="lock-button" id="lock-entry" type="button">${t().lock} ×</button>` : ''}</section>`;
@@ -30,8 +55,80 @@ function works() { return page(`<section class="inner-page"><div class="page-int
 function subsite(site) { return page(`<section class="subsite-page ${site.tone}"><a class="back-link" href="/">← ${t().back}</a><span class="kicker">SUBSITE / ${site.name}</span><h1>${text(site.zh,site.en)}</h1><p>${site.description}</p><div class="subsite-placeholder"><span>WIP / 2026</span><strong>${text('这是一个可访问的子站初稿。', 'This is an accessible first draft of the subsite.')}</strong><a href="/engine/">${t().tools} ↗</a></div></section>`, ''); }
 app.innerHTML = route === '/engine' ? engine() : route === '/profile' ? profilePage() : route === '/works' ? works() : route === '/toy' ? subsite(subsites[0]) : route === '/notes' ? subsite(subsites[1]) : `${header('/')}${homeContent()}${footer()}`;
 document.querySelector('#language')?.addEventListener('click', () => { try { localStorage.setItem('wwhooo-lang', state.lang === 'zh' ? 'en' : 'zh'); } catch {} location.reload(); });
+
+function triggerUnlock() {
+  if (state.entered) return;
+  state.entered = true;
+  const gate = document.querySelector('#entry-gate');
+  gate?.classList.add('gate-complete');
+  document.querySelector('.home-content')?.setAttribute('aria-hidden', 'false');
+  setTimeout(() => {
+    document.querySelector('.engine-home')?.classList.add('is-unlocked');
+  }, 480);
+}
+
 const slider = document.querySelector('#entry-slider');
-slider?.addEventListener('input', event => { const value = Number(event.target.value); event.target.style.setProperty('--slider-progress', `${value}%`); event.target.setAttribute('aria-valuetext', `${value}%`); if (value >= 96) { state.entered = true; document.querySelector('#entry-gate')?.classList.add('gate-complete'); document.querySelector('.home-content')?.setAttribute('aria-hidden','false'); setTimeout(() => { document.querySelector('.engine-home')?.classList.add('is-unlocked'); }, 450); } });
+const capsule = document.querySelector('.swipe-capsule');
+slider?.addEventListener('input', event => {
+  const value = Number(event.target.value);
+  capsule?.style.setProperty('--swipe-progress', `${value}%`);
+  event.target.setAttribute('aria-valuetext', `${value}%`);
+  if (value >= 85) {
+    triggerUnlock();
+  }
+});
+slider?.addEventListener('change', () => {
+  if (!state.entered && slider) {
+    slider.value = 0;
+    capsule?.style.setProperty('--swipe-progress', '0%');
+  }
+});
+
+// 支持直接在门禁全屏上手势向上滑动解锁（Apple 锁屏式原生体验）
+const gateEl = document.querySelector('#entry-gate');
+if (gateEl) {
+  let startY = 0;
+  let currentY = 0;
+  let isSwiping = false;
+
+  gateEl.addEventListener('touchstart', e => {
+    if (state.entered) return;
+    startY = e.touches[0].clientY;
+    currentY = startY;
+    isSwiping = true;
+  }, { passive: true });
+
+  gateEl.addEventListener('touchmove', e => {
+    if (!isSwiping || state.entered) return;
+    currentY = e.touches[0].clientY;
+    const diff = startY - currentY;
+    if (diff > 0) {
+      const progress = Math.min(100, (diff / 120) * 100);
+      capsule?.style.setProperty('--swipe-progress', `${progress}%`);
+      if (slider) slider.value = progress;
+      if (diff > 90) {
+        isSwiping = false;
+        triggerUnlock();
+      }
+    }
+  }, { passive: true });
+
+  gateEl.addEventListener('touchend', () => {
+    if (!state.entered) {
+      isSwiping = false;
+      capsule?.style.setProperty('--swipe-progress', '0%');
+      if (slider) slider.value = 0;
+    }
+  }, { passive: true });
+
+  // 同时也支持滚轮向上/向下滚动进入
+  gateEl.addEventListener('wheel', e => {
+    if (!state.entered && e.deltaY > 30) {
+      triggerUnlock();
+    }
+  }, { passive: true });
+}
+
 document.querySelector('#lock-entry')?.addEventListener('click', () => { location.reload(); });
 const rail = document.querySelector('.library-rail');
 rail?.addEventListener('wheel', event => { if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) { event.preventDefault(); rail.scrollLeft += event.deltaY; } }, { passive:false });
