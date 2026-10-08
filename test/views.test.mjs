@@ -34,6 +34,7 @@ const RENDERERS = {
   engine: views.engine,
   profile: views.profilePage,
   works: views.works,
+  search: views.searchPage,
   toy: () => views.subsite(data.subsites[0]),
   notes: () => views.subsite(data.subsites[1]),
 };
@@ -70,7 +71,7 @@ test('the route table exposes both language trees', () => {
     assert.equal(resolveRoute(def.path.zh).id, def.id);
   }
   // Only the placeholder subsites are kept out of the index.
-  assert.equal(INDEXABLE_PATHS.length, 8);
+  assert.equal(INDEXABLE_PATHS.length, 10);
 });
 
 test('normalizePath handles both trees and /index.html', () => {

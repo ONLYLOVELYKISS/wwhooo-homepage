@@ -192,6 +192,8 @@
         var entered = false;
         try {
           entered = sessionStorage.getItem('wwhooo-entered') === '1';
+          var theme = localStorage.getItem('wwhooo-theme');
+          if (theme === 'light' || theme === 'dark' || theme === 'system') root.dataset.theme = theme;
         } catch (e) {
           /* private mode */
         }

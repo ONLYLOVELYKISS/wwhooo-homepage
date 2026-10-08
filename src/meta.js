@@ -55,6 +55,12 @@ export const ROUTE_DEFS = [
     title: l('作品与记录 — Linn', 'Works & notes — Linn'),
     description: l('软件项目与摄影作品。', 'Software projects and photographs.'),
   },
+  {
+    id: 'search',
+    path: { zh: '/search/', en: enPath('/search/') },
+    title: l('搜索 — Linn', 'Search — Linn'),
+    description: l('在常用搜索引擎之间切换，快速开始搜索。', 'Switch search engines and start searching quickly.'),
+  },
   // Placeholder subsites: thin content, so they are kept out of the index and
   // out of sitemap.xml until they hold something real. Flip `noindex` off and
   // the sitemap picks them up on the next build.

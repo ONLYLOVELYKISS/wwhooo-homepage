@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { setContext } from '../src/context.js';
 import { subsites } from '../src/data.js';
 import { HTML_LANG, LANGS, OG_LOCALE, ROUTE_DEFS, SITE_URL, alternatesFor } from '../src/meta.js';
-import { engine, home, profilePage, subsite, works } from '../src/views.js';
+import { engine, home, profilePage, searchPage, subsite, works } from '../src/views.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
@@ -27,6 +27,7 @@ const RENDERERS = {
   engine,
   profile: profilePage,
   works,
+  search: searchPage,
   toy: () => subsite(subsites[0]),
   notes: () => subsite(subsites[1]),
 };

@@ -15,6 +15,7 @@ const NAV = [
   ['engine', 1],
   ['profile', 2],
   ['works', 3],
+  ['search', 4],
 ];
 
 /** Responsive <picture> for the Sakura photograph. */
@@ -37,6 +38,7 @@ export function header(activeId = '') {
       <a class="brand" href="${pathFor('home', lang)}"><span>WW</span><b>LINN</b></a>
       <nav aria-label="${t().navLabel}">${items}</nav>
       ${languageLink()}
+      ${themeControl()}
     </header>`;
 }
 
@@ -48,6 +50,18 @@ export function header(activeId = '') {
  * because axe's label-content-name-mismatch rule requires the accessible name to
  * contain the visible text — "EN" plus an aria-label of "切换到英文" fails it.
  */
+function themeControl() {
+  return `<label class="theme-control" for="theme-select">
+      <span class="sr-only">${t().themeLabel}</span>
+      <span aria-hidden="true">◐</span>
+      <select id="theme-select" name="theme" data-theme-control aria-label="${t().themeLabel}">
+        <option value="system">${t().themeSystem}</option>
+        <option value="light">${t().themeLight}</option>
+        <option value="dark">${t().themeDark}</option>
+      </select>
+    </label>`;
+}
+
 function languageLink() {
   const other = otherLang(getLang());
   const target = pathFor(getRouteId() ?? 'home', other);
@@ -232,6 +246,33 @@ export function engine() {
       <div class="tool-groups">${groups}</div>
     </section>`,
     'engine',
+  );
+}
+
+export function searchPage() {
+  return page(
+    `<section class="inner-page search-page">
+      <div class="page-intro">
+        <span class="kicker">05 / SEARCH</span>
+        <h1>${t().searchHeading}</h1>
+        <p>${t().searchIntro}</p>
+      </div>
+      <form class="search-panel" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
+        <label for="search-query">${t().searchPlaceholder}</label>
+        <div class="search-row">
+          <input id="search-query" name="q" type="search" placeholder="${t().searchPlaceholder}" autocomplete="off" required />
+          <button type="submit">${t().searchSubmit}<span aria-hidden="true">↗</span></button>
+        </div>
+        <label class="search-provider-label" for="search-provider">${t().searchProvider}</label>
+        <select id="search-provider" class="search-provider-select" data-search-provider>
+          <option value="https://www.google.com/search">Google</option>
+          <option value="https://www.bing.com/search">Bing</option>
+          <option value="https://duckduckgo.com/">DuckDuckGo</option>
+          <option value="https://github.com/search">GitHub</option>
+        </select>
+      </form>
+    </section>`,
+    'search',
   );
 }
 

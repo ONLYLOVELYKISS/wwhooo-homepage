@@ -137,6 +137,56 @@ test('the page tracks light and dark system preference live', async () => {
   await context.close();
 });
 
+test('manual theme modes override the system and persist', async () => {
+  const { context, page } = await open('/', { colorScheme: 'dark' });
+  await page.locator('[data-theme-control]').selectOption('light');
+  assert.equal(
+    await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--paper').trim()),
+    '#e1e9e4',
+  );
+  assert.equal(await page.evaluate(() => localStorage.getItem('wwhooo-theme')), 'light');
+  await page.reload();
+  assert.equal(await page.locator('[data-theme-control]').inputValue(), 'light');
+  assert.equal(
+    await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--paper').trim()),
+    '#e1e9e4',
+  );
+  await page.locator('[data-theme-control]').selectOption('dark');
+  assert.equal(
+    await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--paper').trim()),
+    '#101513',
+  );
+  await page.locator('[data-theme-control]').selectOption('system');
+  assert.equal(await page.evaluate(() => localStorage.getItem('wwhooo-theme')), 'system');
+  await context.close();
+});
+
+test('mobile bottom actions do not overlap on Xiaomi-sized viewport', async () => {
+  const { context, page } = await open('/', { viewport: { width: 393, height: 873 }, hasTouch: true });
+  await page.locator('#entry-gate').click({ position: { x: 196, y: 436 } });
+  await page.locator('footer a[href="#top"]').scrollIntoViewIfNeeded();
+  const lock = await page.locator('.lock-button').boundingBox();
+  const top = await page.locator('footer a[href="#top"]').boundingBox();
+  assert.ok(lock && top, 'both bottom actions must be rendered');
+  assert.ok(
+    lock.y + lock.height + 8 <= top.y || top.y + top.height + 8 <= lock.y,
+    'bottom actions must have a visible gap',
+  );
+  await context.close();
+});
+test('the search site works in both language trees', async () => {
+  for (const path of ['/search/', '/en/search/']) {
+    const { context, page } = await open(path);
+    assert.equal(await page.locator('[data-search-form]').count(), 1);
+    assert.equal(await page.locator('[data-search-provider] option').count(), 4);
+    await page.locator('[data-search-provider]').selectOption('https://www.bing.com/search');
+    assert.equal(await page.locator('[data-search-form]').getAttribute('action'), 'https://www.bing.com/search');
+    await page.locator('input[name="q"]').fill('wwhooo');
+    assert.equal(await page.locator('input[name="q"]').inputValue(), 'wwhooo');
+    await context.close();
+  }
+});
+
 test('the dark palette is present in no-JS and standalone 404 experiences', async () => {
   const fallback = await open('/', { javaScriptEnabled: false, colorScheme: 'dark' });
   const fallbackColors = await fallback.page.evaluate(() => ({

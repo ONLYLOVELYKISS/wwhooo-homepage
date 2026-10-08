@@ -33,7 +33,7 @@ test('the build produced one HTML file per route, per language', async () => {
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .sort();
-  assert.deepEqual(englishDirs, ['engine', 'notes', 'profile', 'toy', 'works']);
+  assert.deepEqual(englishDirs, ['engine', 'notes', 'profile', 'search', 'toy', 'works']);
   assert.ok(
     englishEntries.some((entry) => entry.isFile() && entry.name === 'index.html'),
     'the English homepage must sit at dist/en/index.html',
@@ -193,12 +193,12 @@ test('the sitemap lists both trees with xhtml:link alternates', async () => {
 
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   assert.deepEqual(locs.sort(), INDEXABLE_PATHS.map((p) => `${SITE_URL}${p}`).sort());
-  assert.equal(locs.length, 8, '4 indexable routes x 2 languages');
+  assert.equal(locs.length, 10, '5 indexable routes x 2 languages');
 
   // Every zh page must point at its en counterpart from inside the sitemap.
   assert.match(sitemap, /hreflang="en" href="https:\/\/wwhooo\.com\/en\/works\/"/);
   assert.match(sitemap, /hreflang="zh-CN" href="https:\/\/wwhooo\.com\/works\/"/);
-  assert.equal((sitemap.match(/hreflang="x-default"/g) ?? []).length, 8);
+  assert.equal((sitemap.match(/hreflang="x-default"/g) ?? []).length, 10);
 });
 
 test('the GitHub Pages 404 redirect is gone', async () => {

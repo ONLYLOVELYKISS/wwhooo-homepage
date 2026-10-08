@@ -20,13 +20,14 @@ import {
   resolveRoute,
 } from './meta.js';
 import { hasEntered } from './session.js';
-import { engine, home, notFound, profilePage, subsite, works } from './views.js';
+import { engine, home, notFound, profilePage, searchPage, subsite, works } from './views.js';
 
 const RENDERERS = {
   home,
   engine,
   profile: profilePage,
   works,
+  search: searchPage,
   toy: () => subsite(subsites[0]),
   notes: () => subsite(subsites[1]),
 };
