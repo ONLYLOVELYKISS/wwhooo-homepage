@@ -1,0 +1,136 @@
+// Bilingual copy and language state.
+//
+// The language lives here rather than in the view layer so that a language
+// switch can re-render in place instead of reloading the document (which used
+// to drop the visitor back behind the entry gate).
+
+const STORAGE_KEY = 'wwhooo-lang';
+
+export const copy = {
+  zh: {
+    skip: '跳到主要内容',
+    navLabel: '主导航',
+    nav: ['首页', '工具', '档案', '作品'],
+    eyebrow: 'Linn / Personal engine',
+    title: '把值得留下的，<br>放在这里。',
+    intro: '一个持续更新的个人入口：记录项目、工具、观察和正在形成的东西。',
+    explore: '探索我的空间',
+    status: '现在进行中',
+    statusText: '维护个人网站，整理 TOY 实验场',
+    index: '目录',
+    indexText: '从正在使用的东西开始，逐步了解这个空间。',
+    tools: '工具箱',
+    profile: '关于我',
+    works: '作品与记录',
+    selected: '精选项目',
+    photo: '一张照片',
+    contact: '联系我',
+    language: 'EN',
+    languageLabel: '切换到英文',
+    top: '回到顶部',
+    lock: '重新进入',
+    unlock: '向上滑动进入',
+    unlockHint: '向上滑动 Sakura，进入个人引擎',
+    unlocked: '准备进入',
+    gateTitle: '向上滑动<br><i>进入引擎。</i>',
+    gateFoot: '没有登录，只有一次主动进入。',
+    library: '个人库',
+    libraryText: '项目、子站、工具和视觉记录，放在同一条可探索的轨道上。',
+    dragExplore: '左右滑动浏览',
+    open: '进入',
+    back: '返回主站',
+    subsiteWip: '这是一个可访问的子站初稿。',
+    notFoundTitle: '页面不存在',
+    notFoundHeading: '这个地址<br><i>没有内容。</i>',
+    notFoundBody: '也许链接已经改变，或者它从来没有存在过。',
+    notFoundCta: '回到首页',
+    engineHeading: '我会反复打开的<br><i>一些入口。</i>',
+    engineIntro: '保持简单，保持可用。把常用的东西放在顺手的位置。',
+    profileHeading: '持续进行中。',
+    worksHeading: '做过，<br><i>看过。</i>',
+    worksIntro: '软件项目和摄影作品。一个人如何工作，也如何看待周围的世界。',
+  },
+  en: {
+    skip: 'Skip to main content',
+    navLabel: 'Main navigation',
+    nav: ['Home', 'Tools', 'Profile', 'Works'],
+    eyebrow: 'Linn / Personal engine',
+    title: 'Things worth<br>keeping, here.',
+    intro: 'A living personal entry point for projects, tools, observations, and things taking shape.',
+    explore: 'Explore the space',
+    status: 'Currently',
+    statusText: 'Maintaining this site and the TOY lab',
+    index: 'Index',
+    indexText: 'Start with the things in use and take a closer look around.',
+    tools: 'Toolbox',
+    profile: 'About me',
+    works: 'Works & notes',
+    selected: 'Selected projects',
+    photo: 'A photograph',
+    contact: 'Find me',
+    language: '中',
+    languageLabel: 'Switch to Chinese',
+    top: 'Back to top',
+    lock: 'Enter again',
+    unlock: 'Swipe up to enter',
+    unlockHint: 'Swipe up on Sakura to enter the personal engine',
+    unlocked: 'Ready to enter',
+    gateTitle: 'Swipe up into<br><i>personal engine.</i>',
+    gateFoot: 'No login, just a deliberate entrance.',
+    library: 'Personal library',
+    libraryText: 'Projects, subsites, tools, and visual notes arranged on one open rail.',
+    dragExplore: 'Swipe left/right to explore',
+    open: 'Open',
+    back: 'Back home',
+    subsiteWip: 'This is an accessible first draft of the subsite.',
+    notFoundTitle: 'Page not found',
+    notFoundHeading: 'This address<br><i>has nothing.</i>',
+    notFoundBody: 'The link may have changed, or it never existed at all.',
+    notFoundCta: 'Back home',
+    engineHeading: 'A few places I<br><i>return to.</i>',
+    engineIntro: 'Simple, useful, and close at hand.',
+    profileHeading: 'in progress.',
+    worksHeading: 'Made,<br><i>observed.</i>',
+    worksIntro: 'Software projects and photographs. How I work, and how I look at the world.',
+  },
+};
+
+const read = () => {
+  try {
+    return localStorage.getItem(STORAGE_KEY) === 'en' ? 'en' : 'zh';
+  } catch {
+    return 'zh';
+  }
+};
+
+let lang = read();
+
+const applyDocumentLang = () => {
+  // Guarded so this module (and everything importing it) can be imported in
+  // Node for unit tests and static route generation.
+  if (typeof document === 'undefined') return;
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+};
+
+applyDocumentLang();
+
+export const getLang = () => lang;
+
+export function setLang(next) {
+  lang = next === 'en' ? 'en' : 'zh';
+  try {
+    localStorage.setItem(STORAGE_KEY, lang);
+  } catch {
+    /* private mode: keep the in-memory value */
+  }
+  applyDocumentLang();
+  return lang;
+}
+
+export const toggleLang = () => setLang(lang === 'zh' ? 'en' : 'zh');
+
+/** The active copy dictionary. */
+export const t = () => copy[lang];
+
+/** Resolve a { zh, en } pair from data.js. */
+export const text = (pair) => (pair ? pair[lang] : '');

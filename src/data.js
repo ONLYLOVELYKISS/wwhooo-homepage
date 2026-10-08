@@ -1,6 +1,129 @@
-export const profile={statement:'A personal space for useful things, quiet observations, and work in progress.',statementZh:'一个放置实用事物、安静观察与未完成工作的个人空间。',bio:'我在网站、自动化工具与跨技术栈实验之间移动。这里是一个持续生长的个人入口。',bioEn:'I move between websites, automation, and experiments across stacks.'};
-export const engineGroups=[{title:'Search',items:[['Google','通用搜索','General search','https://www.google.com/'],['Bing','搜索与图像','Search and images','https://www.bing.com/'],['GitHub','代码与开源','Code and open source','https://github.com/']]},{title:'Build',items:[['MDN','Web 文档','Web documentation','https://developer.mozilla.org/'],['Can I Use','兼容性查询','Browser compatibility','https://caniuse.com/'],['Vite','前端构建','Frontend build tool','https://vite.dev/']]},{title:'AI / Tools',items:[['OpenAI','AI 工具','AI tools','https://chatgpt.com/'],['Regex101','正则调试','Regular expression tester','https://regex101.com/'],['JSON Crack','数据可视化','Data visualization','https://jsoncrack.com/']]}];
-export const projects=[['wwhooo.com','PERSONAL HOMEPAGE','2026','以摄影、项目和个人档案为入口，重新组织一个人的公开空间。','A personal space organized around photography, projects, and profile.','https://github.com/ONLYLOVELYKISS/wwhooo-homepage'],['TOY','PYTHON / AI + INTERNET','2025—','阶段性生长的实验场：把好奇心拆成小工具，把小工具变成可运行的东西。','A growing lab for turning curiosity into small, runnable tools.','https://github.com/ONLYLOVELYKISS/TOY'],['chaoxing-sign-cli','TYPESCRIPT / AUTOMATION','ARCHIVE','围绕具体使用场景构建的自动化工具，探索监测、签到和消息推送。','An automation tool exploring monitoring, sign-ins, and notifications.','https://github.com/ONLYLOVELYKISS/chaoxing-sign-cli']];
-export const subsites=[{path:'/toy/',name:'TOY LAB',zh:'TOY 实验场',en:'A small lab for AI and internet experiments.',description:'阶段性实验、脚本和可以运行的小想法。',tone:'lab'},{path:'/notes/',name:'NIGHT NOTES',zh:'夜间札记',en:'Quiet notes from the edge of a work session.',description:'把观察、片段和还没有结论的想法放在这里。',tone:'notes'}];
-export const photo={title:'Sakura / 夜间花卉',titleEn:'Sakura / Night Bloom',note:'在暗处保留一点温度。',noteEn:'Keeping a little warmth in the dark.',image:'https://cdn.jsdelivr.net/gh/ONLYLOVELYKISS/wwhooo-homepage@main/IMG_Sakura.JPG'};
-export const links=[['GitHub','https://github.com/ONLYLOVELYKISS'],['Email','mailto:hello@wwhooo.com']];
+// Content model for wwhooo.com.
+//
+// Every user-visible string is stored as a { zh, en } pair so the bilingual
+// layer can never silently fall back to Chinese. Views read these through
+// `text()` from ./i18n.js.
+
+/** Bilingual string helper: keeps the zh/en pair shape obvious at the call site. */
+const l = (zh, en) => ({ zh, en });
+
+export const site = {
+  url: 'https://wwhooo.com',
+  author: 'Linn',
+  email: 'hello@wwhooo.com',
+  github: 'https://github.com/ONLYLOVELYKISS',
+};
+
+export const profile = {
+  statement: l(
+    '技术是我靠近问题的方式，不是我介绍自己的全部。',
+    'Technology is how I get closer to problems, not the whole story of who I am.',
+  ),
+  bio: l(
+    '我在网站、自动化工具与跨技术栈实验之间移动。这里是一个持续生长的个人入口。',
+    'I move between websites, automation, and experiments across stacks. This is a personal entry point that keeps growing.',
+  ),
+  focus: l(
+    '来自中国西安，关注个人网站、自动化、实用工具，以及从小念头开始、最后变成可使用的东西。',
+    'Based in Xi’an, China. I care about personal websites, automation, useful tools, and small ideas that become usable things.',
+  ),
+};
+
+export const engineGroups = [
+  {
+    title: 'Search',
+    items: [
+      { name: 'Google', note: l('通用搜索', 'General search'), url: 'https://www.google.com/' },
+      { name: 'Bing', note: l('搜索与图像', 'Search and images'), url: 'https://www.bing.com/' },
+      { name: 'GitHub', note: l('代码与开源', 'Code and open source'), url: 'https://github.com/' },
+    ],
+  },
+  {
+    title: 'Build',
+    items: [
+      { name: 'MDN', note: l('Web 文档', 'Web documentation'), url: 'https://developer.mozilla.org/' },
+      { name: 'Can I Use', note: l('兼容性查询', 'Browser compatibility'), url: 'https://caniuse.com/' },
+      { name: 'Vite', note: l('前端构建', 'Frontend build tool'), url: 'https://vite.dev/' },
+    ],
+  },
+  {
+    title: 'AI / Tools',
+    items: [
+      { name: 'ChatGPT', note: l('AI 工具', 'AI tools'), url: 'https://chatgpt.com/' },
+      { name: 'Regex101', note: l('正则调试', 'Regular expression tester'), url: 'https://regex101.com/' },
+      { name: 'JSON Crack', note: l('数据可视化', 'Data visualization'), url: 'https://jsoncrack.com/' },
+    ],
+  },
+];
+
+export const projects = [
+  {
+    name: 'wwhooo.com',
+    stack: 'PERSONAL HOMEPAGE',
+    period: '2026',
+    desc: l(
+      '以摄影、项目和个人档案为入口，重新组织一个人的公开空间。',
+      'A personal space organized around photography, projects, and profile.',
+    ),
+    url: 'https://github.com/ONLYLOVELYKISS/wwhooo-homepage',
+  },
+  {
+    name: 'TOY',
+    stack: 'PYTHON / AI + INTERNET',
+    period: '2025—',
+    desc: l(
+      '阶段性生长的实验场：把好奇心拆成小工具，把小工具变成可运行的东西。',
+      'A growing lab for turning curiosity into small, runnable tools.',
+    ),
+    url: 'https://github.com/ONLYLOVELYKISS/TOY',
+  },
+  {
+    name: 'chaoxing-sign-cli',
+    stack: 'TYPESCRIPT / AUTOMATION',
+    period: 'ARCHIVE',
+    desc: l(
+      '围绕具体使用场景构建的自动化工具，探索监测、签到和消息推送。',
+      'An automation tool exploring monitoring, sign-ins, and notifications.',
+    ),
+    url: 'https://github.com/ONLYLOVELYKISS/chaoxing-sign-cli',
+  },
+];
+
+export const subsites = [
+  {
+    path: '/toy/',
+    name: 'TOY LAB',
+    tone: 'lab',
+    title: l('TOY 实验场', 'TOY Lab'),
+    desc: l('阶段性实验、脚本和可以运行的小想法。', 'Experiments, scripts, and small ideas that actually run.'),
+  },
+  {
+    path: '/notes/',
+    name: 'NIGHT NOTES',
+    tone: 'notes',
+    title: l('夜间札记', 'Night Notes'),
+    desc: l('把观察、片段和还没有结论的想法放在这里。', 'Observations, fragments, and thoughts without conclusions yet.'),
+  },
+];
+
+// Photography. The master file lives in design/source/ and is never published;
+// the derivatives below are generated by design/source/optimize_assets.py.
+export const photo = {
+  title: l('Sakura / 夜间花卉', 'Sakura / Night Bloom'),
+  note: l('在暗处保留一点温度。', 'Keeping a little warmth in the dark.'),
+  alt: l('夜色中盛开的樱花特写', 'A close-up of sakura blossoms against a dark night'),
+  widths: [800, 1600, 2400],
+  fallback: '/images/sakura-1600.jpg',
+  card: '/images/sakura-card.webp',
+  width: 2400,
+  height: 1004,
+};
+
+/** Responsive WebP candidate list for the <source> element. */
+export const photoSrcset = (widths = photo.widths) =>
+  widths.map((w) => `/images/sakura-${w}.webp ${w}w`).join(', ');
+
+export const links = [
+  { name: 'GitHub', url: site.github, rel: 'me' },
+  { name: 'Email', url: `mailto:${site.email}` },
+];

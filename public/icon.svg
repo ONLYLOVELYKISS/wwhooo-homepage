@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Linn">
+  <rect width="64" height="64" rx="14" fill="#141c1b" />
+  <path
+    d="M12.16 21.12 L22.08 42.88 L32 21.12 L41.92 42.88 L51.84 21.12"
+    fill="none"
+    stroke="#e1e9e4"
+    stroke-width="5.44"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="53.12" cy="10.88" r="3.84" fill="#bf5945" />
+</svg>

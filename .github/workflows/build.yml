@@ -8,6 +8,12 @@ on:
 permissions:
   contents: write
 
+# A burst of pushes must not race: force-orphan deploys that overlap can publish
+# an older build after a newer one.
+concurrency:
+  group: publish-deploy
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -24,8 +30,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Builds, generates per-route HTML + sitemap, then runs the test suite.
+      # The suite enforces image-weight budgets and per-route canonical tags, so
+      # a regression fails the deploy instead of shipping.
       - name: Test and build static files
         run: npm test
+
+      - name: Keep the built site for debugging
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-failed-build
+          path: dist
+          if-no-files-found: ignore
 
       - name: Publish deploy branch
         uses: peaceiris/actions-gh-pages@v4
@@ -33,4 +50,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: deploy
           publish_dir: ./dist
-          force_orphan: true
+          # Keep history on the deploy branch: it costs ~250 KB per release and
+          # it is what makes `git reset --hard HEAD~1` a usable rollback.
+          # (force_orphan: true rewrote the branch every time, leaving the
+          # server with nothing to roll back to.)
+          force_orphan: false
+          commit_message: 'deploy: ${{ github.sha }}'
