@@ -126,8 +126,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DnFk2q29.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C9jUHVHE.css">
+    <script type="module" crossorigin src="/assets/index-CaX7-oZV.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cjvk80uQ.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -138,7 +138,8 @@
       <nav aria-label="主导航"><a href="/" aria-current="page">首页</a><a href="/engine/">工具</a><a href="/profile/">档案</a><a href="/works/">作品</a></nav>
       <a class="language" href="/en/" hreflang="en" lang="en">EN<span class="sr-only"> — 切换到英文</span></a>
     </header><main id="top" tabindex="-1"><div class="engine-home is-locked" id="engine-home">
-      <section class="entry-gate" id="entry-gate" aria-label="向上滑动进入">
+      <section class="entry-gate" id="entry-gate" role="region" tabindex="0" aria-label="向上滑动进入" aria-describedby="gate-instruction">
+      <span class="sr-only" id="gate-instruction">在屏幕任意位置向上滑动，进入个人引擎 键盘用户可按 Enter 或空格进入。</span>
       <div class="gate-image">
         <picture>
         <source type="image/webp" srcset="/images/sakura-800.webp 800w, /images/sakura-1600.webp 1600w, /images/sakura-2400.webp 2400w" sizes="(max-width: 768px) 100vw, 60vw">
@@ -150,14 +151,11 @@
         <span class="kicker">WW / SAKURA ENTRY</span>
         <p class="gate-status">准备进入</p>
         <h1>向上滑动<br><i>进入引擎。</i></h1>
-        <p class="gate-hint">在屏幕任意位置向上滑动，进入个人引擎</p>
-        <button class="swipe-capsule" id="enter-button" type="button">
-          <span class="swipe-thumb" aria-hidden="true"><span class="chevron">↑</span></span>
-          <span class="swipe-text">向上滑动进入</span>
-        </button>
+        <p class="gate-hint"><span class="hint-chevron" aria-hidden="true">↑</span>在屏幕任意位置向上滑动，进入个人引擎</p>
         <p class="gate-foot">没有登录，只有一次主动进入。</p>
         <p class="gate-alt"><a href="/en/" hreflang="en" lang="en">English</a></p>
       </div>
+      <span class="gate-progress" aria-hidden="true"></span>
       <b class="gate-mark" aria-hidden="true">桜</b>
     </section>
       <div class="home-content" id="home-content">

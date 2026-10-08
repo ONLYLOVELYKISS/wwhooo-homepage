@@ -126,8 +126,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DnFk2q29.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C9jUHVHE.css">
+    <script type="module" crossorigin src="/assets/index-CaX7-oZV.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cjvk80uQ.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -138,7 +138,8 @@
       <nav aria-label="Main navigation"><a href="/en/" aria-current="page">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a></nav>
       <a class="language" href="/" hreflang="zh-CN" lang="zh-CN">中<span class="sr-only"> — Switch to Chinese</span></a>
     </header><main id="top" tabindex="-1"><div class="engine-home is-locked" id="engine-home">
-      <section class="entry-gate" id="entry-gate" aria-label="Swipe up to enter">
+      <section class="entry-gate" id="entry-gate" role="region" tabindex="0" aria-label="Swipe up to enter" aria-describedby="gate-instruction">
+      <span class="sr-only" id="gate-instruction">Swipe up anywhere to enter the personal engine Keyboard users can press Enter or Space to enter.</span>
       <div class="gate-image">
         <picture>
         <source type="image/webp" srcset="/images/sakura-800.webp 800w, /images/sakura-1600.webp 1600w, /images/sakura-2400.webp 2400w" sizes="(max-width: 768px) 100vw, 60vw">
@@ -150,14 +151,11 @@
         <span class="kicker">WW / SAKURA ENTRY</span>
         <p class="gate-status">Ready to enter</p>
         <h1>Swipe up into<br><i>personal engine.</i></h1>
-        <p class="gate-hint">Swipe up anywhere to enter the personal engine</p>
-        <button class="swipe-capsule" id="enter-button" type="button">
-          <span class="swipe-thumb" aria-hidden="true"><span class="chevron">↑</span></span>
-          <span class="swipe-text">Swipe up to enter</span>
-        </button>
+        <p class="gate-hint"><span class="hint-chevron" aria-hidden="true">↑</span>Swipe up anywhere to enter the personal engine</p>
         <p class="gate-foot">No login, just a deliberate entrance.</p>
         <p class="gate-alt"><a href="/" hreflang="zh-CN" lang="zh-CN">中文</a></p>
       </div>
+      <span class="gate-progress" aria-hidden="true"></span>
       <b class="gate-mark" aria-hidden="true">桜</b>
     </section>
       <div class="home-content" id="home-content">
