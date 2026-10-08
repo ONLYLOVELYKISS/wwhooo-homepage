@@ -5,22 +5,23 @@
 ## 目录结构
 
 ```
-index.html                     Vite 入口与首屏占位（构建后成为 dist/index.html）
+index.html                     Vite 入口与首屏占位（构建后成为 dist/index.html，即中文首页）
 src/
-  main.js                      启动：注册渲染后钩子、链接拦截、语言切换
-  router.js                    路由表、按路由同步 <head>、站内链接拦截
+  main.js                      启动：注册渲染后钩子、链接拦截
+  router.js                    路由解析（含语言树）、按路由同步 <head>、站内链接拦截
   views.js                     所有页面模板（唯一输出 HTML 的地方）
   gate.js                      门禁交互（按钮 + 指针滑动 + 滚轮）
-  i18n.js                      中英文案字典与语言状态
-  meta.js                      每路由的 title/description/canonical（构建脚本也读它）
-  data.js                      工具、项目、子站、摄影数据
+  i18n.js                      中英文案字典（纯查表，语言来自 URL）
+  context.js                   当前渲染语言与路由 id，由 router 设置
+  meta.js                      路由定义表：双语路径、title/description、hreflang
+  data.js                      工具、项目、归档、子站、摄影数据
   session.js                   本次会话是否已通过门禁
   style.css                    响应式视觉系统
 scripts/
-  build-routes.mjs             构建后生成每路由真实 HTML 与 sitemap.xml
+  build-routes.mjs             构建后为双语共 11 个路径生成真实 HTML 与 sitemap.xml
 test/
   views.test.mjs               渲染层测试（直接断言生成的 HTML）
-  build.test.mjs               构建产物测试（体积预算、canonical、路由文件）
+  build.test.mjs               构建产物测试（体积预算、canonical、hreflang、路由文件）
 design/source/
   sakura-original.jpg          主视觉母版（不发布）
   optimize_assets.py           从母版生成 webp/jpg 派生图与品牌图标
@@ -37,7 +38,7 @@ npm install
 npm run dev
 ```
 
-开发服务器直接用 Vite 的 HTML fallback，`/engine/`、`/works/` 等路径由客户端路由渲染 —— 这与生产环境不同（生产是每路由一个真实文件），但页面内容一致。
+开发服务器直接用 Vite 的 HTML fallback，`/engine/`、`/en/engine/` 等路径由客户端路由渲染 —— 这与生产环境不同（生产是每个路由每个语言一个真实文件），但页面内容一致。
 
 ## 构建与测试
 
@@ -108,7 +109,7 @@ location / {
 error_page 404 /404.html;
 ```
 
-构建会为每个路由产出真实文件（`dist/engine/index.html`、`dist/profile/index.html` …），所以 `/engine/` 由常规 `index` 查找命中，未知路径可以返回**真正的 404 状态码**而不是 200 软 404。
+构建会为每个路由的每种语言产出真实文件（`dist/engine/index.html`、`dist/en/engine/index.html` …），所以 `/engine/` 和 `/en/engine/` 都由常规 `index` 查找命中，未知路径可以返回**真正的 404 状态码**而不是 200 软 404。**新增 `/en/` 语言树不需要改 nginx**，同一条 `try_files` 就够。
 
 注意：这条 `try_files` 一直在生产配置里，但**在这次改动之前 `/engine/` 仍然返回 404** —— 因为当时没有任何真实路由文件，也没有 `error_page`，`=404` 只能落到 nginx 默认错误页。那套 GitHub Pages 的 `/?/engine/` 重定向 hack 在 nginx 上从未生效过。修好它靠的是生成真实路由文件，不是改 nginx。
 
@@ -140,15 +141,22 @@ rsync -a --delete --exclude='.git' ./ /opt/static-site/site/
 
 **首页内容始终在 DOM 里**。门禁通过 `inert` + `aria-hidden` 把内容移出交互与无障碍树，而不是 `display:none`，这样爬虫和无 JS 访问者仍能看到真实文案。
 
-**双语是运行时的，不是两套 URL**。语言存在 `localStorage`，切换语言就地重渲染（旧版 `location.reload()` 会把已经进入的访客重新拦在门禁外）。代价是搜索引擎只会看到默认的 `zh-CN` 内容；如果需要两种语言各自可索引，需要引入 `/en/` 路径与 `hreflang`，这是目前**有意不做**的部分。
+**双语是两套真实 URL，不是运行时偏好**。`/engine/` 是中文页，`/en/engine/` 是英文页，`src/meta.js` 的 `ROUTE_DEFS` 同时定义两条路径、各自的 title/description 和三条 hreflang（`zh-CN` / `en` / `x-default`）。**语言由 URL 决定**，`localStorage` 不再参与渲染 —— 这是英文内容能被索引的前提，之前只有一条 URL，英文文案对搜索引擎完全不存在。
 
-**`/toy/` 与 `/notes/` 是占位子站**，内容还薄，因此标记为 `noindex` 且不进 sitemap。补上真实内容后，把 `src/meta.js` 里对应的 `noindex: true` 去掉即可，sitemap 会在下次构建自动包含它们。
+语言控件因此是一个**真实链接**（`<a hreflang="en" href="/en/engine/">`）：可抓取、可中键、可分享，禁用 JS 也能用；`router.js` 会像处理其他站内链接一样就地接管它，所以切换依然不用整页刷新，也不会把已经进入的访客重新拦在门禁外（`sessionStorage` 跨语言共享）。
+
+`sitemap.xml` 由 `src/meta.js` 生成，8 条可索引 URL，每条都带 `<xhtml:link>` 交替链接。`/toy/`、`/notes/` 两种语言都标 `noindex` 且不进 sitemap。
+
+**`/toy/` 与 `/notes/` 是占位子站**，内容还薄，因此不进索引。补上真实内容后，把 `src/meta.js` 里对应的 `noindex: true` 去掉即可，sitemap 会在下次构建自动包含它们（两种语言一起）。
+
+**工具与项目分两层**。`projects` 是精选，渲染成 `/works/` 上的大标题条目；`archive` 是归档，渲染成排版克制的次级列表。`chaoxing-sign-cli` 属于后者 —— 自动化第三方平台的签到流程在合规上属于灰色地带，不适合作为首页门面，但作为记录保留。
 
 **图片**。主视觉母版 1.75 MB（4095×1713）。构建不处理图片，`public/images/` 下的派生图（800/1600/2400 的 WebP + 1600 的 JPEG 回退 + 700 的卡片图）由 `design/source/optimize_assets.py` 生成后会提交进仓库。替换图片时重跑该脚本。现在页面用 `<picture>` + `srcset`，浏览器只下载所需尺寸（实测首屏约 46 KB 而非 1.75 MB）。
 
 ## 尚未覆盖的部分
 
+- **静态 HTML 只有 head 与首屏占位，正文仍由 JS 渲染**。每个路由每个语言都有真实文件、正确的 `<title>`、canonical 与 hreflang，这是英文可索引的关键；但 `<body>` 里目前只有启动占位，正文要等模块执行。Google 会渲染 JS，所以内容能被索引，只是多一轮渲染。`src/views.js` 及其依赖（`i18n` / `context` / `meta` / `data`）**已经是无 DOM 依赖、可在 Node 里直接 import 的**，因此下一步可以在 `scripts/build-routes.mjs` 里直接调用它们把正文也写进静态文件 —— 唯一要处理的是首页门禁：静态版应渲染成「无门禁的完整首页」，让禁用 JS 的访客也能读到内容，而门禁交给 JS 叠加。
 - 没有 lint / format / 类型检查（`main.js` 已拆分，但未引入 ESLint 与 Prettier）
-- 测试是**渲染输出的字符串断言**，没有真实 DOM（jsdom/linkedom）与浏览器端到端测试；门禁的指针手势、滚轮与焦点转移目前靠人工验证
-- 没有 `hreflang`，英文内容对搜索引擎不可见（见上）
+- 已提交的测试是**渲染输出的字符串断言**，没有真实 DOM。门禁手势、滚轮、焦点转移与语言切换是用仓库外的 `linkedom` 脚本人工验证的（见提交说明），没有进 CI
+- 英文文案是我按中文原文翻译的，你如果有更贴合的表达可以直接改 `src/i18n.js` 与 `src/data.js`
 - `design/source/optimize_assets.py` 需要本机有 Pillow，未接入 CI

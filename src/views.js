@@ -1,15 +1,20 @@
 // Every renderable view. All markup is generated from ./data.js and ./i18n.js,
 // so no user-visible string is hard-coded in a template.
+//
+// Links point at real per-language URLs (`pathFor(id, lang)`) rather than at a
+// language toggle, which is what makes both trees crawlable.
 
-import { engineGroups, links, photo, photoSrcset, profile, projects, site, subsites } from './data.js';
+import { archive, engineGroups, links, photo, photoSrcset, profile, projects, site, subsites } from './data.js';
 import { t, text } from './i18n.js';
+import { getLang, getRouteId } from './context.js';
+import { HTML_LANG, otherLang, pathFor } from './meta.js';
 import { hasEntered } from './session.js';
 
 const NAV = [
-  ['/', 0],
-  ['/engine/', 1],
-  ['/profile/', 2],
-  ['/works/', 3],
+  ['home', 0],
+  ['engine', 1],
+  ['profile', 2],
+  ['works', 3],
 ];
 
 /** Responsive <picture> for the Sakura photograph. */
@@ -21,15 +26,22 @@ function photoPicture({ sizes, priority = false }) {
       </picture>`;
 }
 
-export function header(active = '') {
-  const items = NAV.map(([href, index]) => {
-    const current = active === href ? ' aria-current="page"' : '';
-    return `<a href="${href}"${current}>${t().nav[index]}</a>`;
+export function header(activeId = '') {
+  const lang = getLang();
+  const items = NAV.map(([id, index]) => {
+    const current = activeId === id ? ' aria-current="page"' : '';
+    return `<a href="${pathFor(id, lang)}"${current}>${t().nav[index]}</a>`;
   }).join('');
+
+  // The language control is a real link to the counterpart URL: crawlable,
+  // shareable, middle-clickable, and it still works with JavaScript disabled.
+  const other = otherLang(lang);
+  const target = pathFor(getRouteId() ?? 'home', other);
+
   return `<header class="site-header">
-      <a class="brand" href="/" aria-label="${site.author} — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
+      <a class="brand" href="${pathFor('home', lang)}" aria-label="${site.author} — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
       <nav aria-label="${t().navLabel}">${items}</nav>
-      <button class="language" id="language" type="button" aria-label="${t().languageLabel}">${t().language}</button>
+      <a class="language" href="${target}" hreflang="${HTML_LANG[other]}" lang="${HTML_LANG[other]}" aria-label="${t().languageLabel}">${t().language}</a>
     </header>`;
 }
 
@@ -41,8 +53,8 @@ export function footer() {
     </footer>`;
 }
 
-export function page(content, active = '') {
-  return `<a class="skip-link" href="#top">${t().skip}</a>${header(active)}<main id="top" tabindex="-1">${content}</main>${footer()}`;
+export function page(content, activeId = '') {
+  return `<a class="skip-link" href="#top">${t().skip}</a>${header(activeId)}<main id="top" tabindex="-1">${content}</main>${footer()}`;
 }
 
 // --------------------------------------------------------------------- gate
@@ -90,7 +102,7 @@ function landing() {
 }
 
 function libraryCard(item) {
-  return `<a class="library-card ${item.tone}" href="${item.path}">
+  return `<a class="library-card ${item.tone}" href="${pathFor(item.id, getLang())}">
           <small>${item.name}</small>
           <strong>${text(item.title)}</strong>
           <span>${t().open} ↗</span>
@@ -98,12 +110,12 @@ function libraryCard(item) {
 }
 
 function librarySection() {
-  const extra = `<a class="library-card sakura-card" href="/works/">
+  const extra = `<a class="library-card sakura-card" href="${pathFor('works', getLang())}">
           <small>SAKURA / IMAGE</small>
           <strong>${text(photo.title)}</strong>
           <span>${t().open} ↗</span>
         </a>
-        <a class="library-card engine-card" href="/engine/">
+        <a class="library-card engine-card" href="${pathFor('engine', getLang())}">
           <small>ENGINE / LINKS</small>
           <strong>${text({ zh: '常用入口', en: 'Everyday links' })}</strong>
           <span>${t().open} ↗</span>
@@ -125,12 +137,12 @@ function librarySection() {
 
 function indexSection() {
   const rows = [
-    ['/engine/', '01', t().tools, 'ENGINE'],
-    ['/profile/', '02', t().profile, 'PROFILE'],
-    ['/works/', '03', t().works, 'WORKS'],
+    ['engine', '01', t().tools, 'ENGINE'],
+    ['profile', '02', t().profile, 'PROFILE'],
+    ['works', '03', t().works, 'WORKS'],
   ]
     .map(
-      ([href, num, label, heading]) => `<a href="${href}">
+      ([id, num, label, heading]) => `<a href="${pathFor(id, getLang())}">
             <span>${num}</span>
             <div><small>${label}</small><h3>${heading}</h3></div>
             <b aria-hidden="true">↗</b>
@@ -150,7 +162,7 @@ function indexSection() {
 function statementBand() {
   return `<section class="statement-band">
         <p>“${text(profile.statement)}”</p>
-        <a href="/profile/">${t().profile} ↗</a>
+        <a href="${pathFor('profile', getLang())}">${t().profile} ↗</a>
       </section>`;
 }
 
@@ -172,7 +184,7 @@ export function home() {
       </div>
       <button class="lock-button" id="lock-entry" type="button">${t().lock} ×</button>
     </div>`,
-    '/',
+    'home',
   );
 }
 
@@ -204,7 +216,7 @@ export function engine() {
       </div>
       <div class="tool-groups">${groups}</div>
     </section>`,
-    '/engine/',
+    'engine',
   );
 }
 
@@ -226,8 +238,35 @@ export function profilePage() {
         </div>
       </div>
     </section>`,
-    '/profile/',
+    'profile',
   );
+}
+
+/** Quiet archive list: real information, none of the featured presentation. */
+function archiveSection() {
+  if (archive.length === 0) return '';
+  const items = archive
+    .map(
+      (item) => `<li>
+            <a href="${item.url}" target="_blank" rel="noopener noreferrer">
+              <div>
+                <span class="archive-name">${item.name}</span>
+                <small>${item.stack} / ${item.period}</small>
+                <p>${text(item.desc)}</p>
+              </div>
+              <b aria-hidden="true">↗</b>
+            </a>
+          </li>`,
+    )
+    .join('');
+  return `<section class="archive-section">
+        <div class="section-label">
+          <span>02</span>
+          <h2>${t().archive}</h2>
+          <p>${t().archiveNote}</p>
+        </div>
+        <ul class="archive-list">${items}</ul>
+      </section>`;
 }
 
 export function works() {
@@ -255,29 +294,30 @@ export function works() {
         <div class="section-label"><span>01</span><h2>${t().selected}</h2></div>
         <div>${rows}</div>
       </section>
+      ${archiveSection()}
       <section class="photo-section">
-        <div class="section-label"><span>02</span><h2>${t().photo}</h2></div>
+        <div class="section-label"><span>03</span><h2>${t().photo}</h2></div>
         <figure>
           ${photoPicture({ sizes: '(max-width: 768px) 100vw, 70vw' })}
           <figcaption><strong>${text(photo.title)}</strong><span>${text(photo.note)}</span></figcaption>
         </figure>
       </section>
     </section>`,
-    '/works/',
+    'works',
   );
 }
 
 export function subsite(item) {
   return page(
     `<section class="subsite-page ${item.tone}">
-      <a class="back-link" href="/">← ${t().back}</a>
+      <a class="back-link" href="${pathFor('home', getLang())}">← ${t().back}</a>
       <span class="kicker">SUBSITE / ${item.name}</span>
       <h1>${text(item.title)}</h1>
       <p>${text(item.desc)}</p>
       <div class="subsite-placeholder">
         <span>WIP / ${new Date().getFullYear()}</span>
         <strong>${t().subsiteWip}</strong>
-        <a href="/engine/">${t().tools} ↗</a>
+        <a href="${pathFor('engine', getLang())}">${t().tools} ↗</a>
       </div>
     </section>`,
     '',
@@ -292,7 +332,7 @@ export function notFound() {
         <h1>${t().notFoundHeading}</h1>
         <p>${t().notFoundBody}</p>
       </div>
-      <p class="not-found-cta"><a class="primary-link" href="/">${t().notFoundCta}<span aria-hidden="true">↗</span></a></p>
+      <p class="not-found-cta"><a class="primary-link" href="${pathFor('home', getLang())}">${t().notFoundCta}<span aria-hidden="true">↗</span></a></p>
     </section>`,
     '',
   );

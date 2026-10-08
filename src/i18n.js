@@ -1,10 +1,9 @@
-// Bilingual copy and language state.
+// Bilingual copy.
 //
-// The language lives here rather than in the view layer so that a language
-// switch can re-render in place instead of reloading the document (which used
-// to drop the visitor back behind the entry gate).
+// The active language is owned by ./context.js and derived from the URL by the
+// router, so this module is a pure lookup: no storage, no state, no DOM.
 
-const STORAGE_KEY = 'wwhooo-lang';
+import { getLang } from './context.js';
 
 export const copy = {
   zh: {
@@ -23,6 +22,8 @@ export const copy = {
     profile: '关于我',
     works: '作品与记录',
     selected: '精选项目',
+    archive: '归档',
+    archiveNote: '较早的实验与工具，保留记录。',
     photo: '一张照片',
     contact: '联系我',
     language: 'EN',
@@ -66,6 +67,8 @@ export const copy = {
     profile: 'About me',
     works: 'Works & notes',
     selected: 'Selected projects',
+    archive: 'Archive',
+    archiveNote: 'Earlier experiments and tools, kept for the record.',
     photo: 'A photograph',
     contact: 'Find me',
     language: '中',
@@ -95,42 +98,8 @@ export const copy = {
   },
 };
 
-const read = () => {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === 'en' ? 'en' : 'zh';
-  } catch {
-    return 'zh';
-  }
-};
-
-let lang = read();
-
-const applyDocumentLang = () => {
-  // Guarded so this module (and everything importing it) can be imported in
-  // Node for unit tests and static route generation.
-  if (typeof document === 'undefined') return;
-  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-};
-
-applyDocumentLang();
-
-export const getLang = () => lang;
-
-export function setLang(next) {
-  lang = next === 'en' ? 'en' : 'zh';
-  try {
-    localStorage.setItem(STORAGE_KEY, lang);
-  } catch {
-    /* private mode: keep the in-memory value */
-  }
-  applyDocumentLang();
-  return lang;
-}
-
-export const toggleLang = () => setLang(lang === 'zh' ? 'en' : 'zh');
-
 /** The active copy dictionary. */
-export const t = () => copy[lang];
+export const t = () => copy[getLang()];
 
 /** Resolve a { zh, en } pair from data.js. */
-export const text = (pair) => (pair ? pair[lang] : '');
+export const text = (pair) => (pair ? pair[getLang()] : '');

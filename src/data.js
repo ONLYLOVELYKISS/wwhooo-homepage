@@ -10,7 +10,7 @@ const l = (zh, en) => ({ zh, en });
 export const site = {
   url: 'https://wwhooo.com',
   author: 'Linn',
-  email: 'hello@wwhooo.com',
+  email: 'wwhooo@icloud.com',
   github: 'https://github.com/ONLYLOVELYKISS',
 };
 
@@ -77,6 +77,12 @@ export const projects = [
     ),
     url: 'https://github.com/ONLYLOVELYKISS/TOY',
   },
+];
+
+// Deliberately kept out of the featured list. Automating a third party's
+// check-in flow is a compliance grey area, so it lives as a quiet archive entry
+// instead of a headline project.
+export const archive = [
   {
     name: 'chaoxing-sign-cli',
     stack: 'TYPESCRIPT / AUTOMATION',
@@ -89,16 +95,18 @@ export const projects = [
   },
 ];
 
+// `id` maps to the route definitions in ./meta.js, so each subsite exists in
+// both the Chinese and the English URL tree.
 export const subsites = [
   {
-    path: '/toy/',
+    id: 'toy',
     name: 'TOY LAB',
     tone: 'lab',
     title: l('TOY 实验场', 'TOY Lab'),
     desc: l('阶段性实验、脚本和可以运行的小想法。', 'Experiments, scripts, and small ideas that actually run.'),
   },
   {
-    path: '/notes/',
+    id: 'notes',
     name: 'NIGHT NOTES',
     tone: 'notes',
     title: l('夜间札记', 'Night Notes'),
