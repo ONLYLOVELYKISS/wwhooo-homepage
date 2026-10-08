@@ -14,9 +14,9 @@
   --muted-light: #5a6a64;
   --line: rgba(20, 28, 27, 0.12);
   --line-strong: rgba(20, 28, 27, 0.22);
-  /* 强调色在浅底小字上需达 4.5:1，故取比原 #bf5945 更深的 #a34734（约 5.0:1）；
-     深色背景上的暖色仍用 --accent-soft。 */
-  --accent: #a34734;
+  /* 强调色在浅底小字上需达 4.5:1。axe 实测 #a34734 在 kicker 底色 #ddd8d1 上只有
+     4.22:1，故再压深一档到 #9a3f2d（约 4.8:1）。深色背景上的暖色请用 --accent-soft。 */
+  --accent: #9a3f2d;
   --accent-soft: #d88975;
   --accent-glow: rgba(191, 89, 69, 0.45);
   --serif: 'Instrument Serif', Georgia, serif;
@@ -137,7 +137,9 @@ img {
   transform: translateX(-50%);
   padding: 0 clamp(18px, 2.5vw, 32px);
   border-radius: 40px;
-  background: rgba(20, 28, 27, 0.45);
+  /* axe 实测：0.45 的透明度叠在浅色纸张上只有 #858d8a，白色导航文字对比度 2.71:1。
+     提到 0.72 后合成底色约 #4d5553，配合 0.85 的文字不透明度可达约 6:1。 */
+  background: rgba(20, 28, 27, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.25),
@@ -191,7 +193,8 @@ img {
 .site-header nav a {
   position: relative;
   padding: 6px 4px;
-  opacity: 0.78;
+  /* 0.78 时 axe 实测只有 2.71:1（在浅色页面上叠出 #858d8a 底色）。 */
+  opacity: 0.85;
   transition:
     opacity 0.25s,
     color 0.25s;
@@ -250,6 +253,15 @@ img {
   font: 500 10px var(--mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+/* 深色底上的 kicker。axe 实测 --accent 在门禁底色上只有 2.68:1，
+   必须换成 --accent-soft 并减轻自身底色。 */
+.gate-copy .kicker,
+.subsite-page .kicker {
+  background: rgba(228, 145, 125, 0.1);
+  border-color: rgba(228, 145, 125, 0.28);
+  color: var(--accent-soft);
 }
 
 /* 门禁交互系统（Sakura Entry Gate）
@@ -458,6 +470,26 @@ img {
   color: rgba(255, 255, 255, 0.62);
   font: 10.5px var(--mono);
   letter-spacing: 0.05em;
+}
+/* 门禁本身也要提供语言入口：锁定时 header 是 inert 的（它被不透明浮层挡在后面，
+   键盘不该能走到看不见的控件上），所以英文读者必须在这里就能切到 /en/。 */
+.gate-alt {
+  margin: 18px 0 0;
+}
+.gate-alt a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  font: 500 11px var(--mono);
+  letter-spacing: 0.08em;
+}
+.gate-alt a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 .gate-mark {
   position: absolute;
@@ -1208,7 +1240,9 @@ img {
   justify-content: space-between;
   gap: 30px;
   padding: 22px 24px;
-  background: rgba(255, 255, 255, 0.6);
+  /* 必须不透明：figcaption 的父级 <figure> 是 #111817，半透明白会合成出 #a0a3a2，
+     axe 实测正文只有 2.4:1。 */
+  background: var(--paper);
   border-top: 1px solid var(--line);
   color: var(--muted);
   font: 500 11.5px var(--mono);

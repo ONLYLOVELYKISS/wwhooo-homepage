@@ -23,6 +23,16 @@ export function initGate() {
   const lockButton = document.querySelector('#lock-entry');
   if (!gate || !capsule || !home) return;
 
+  // Everything that sits behind the opaque overlay. The gate covers the page
+  // visually, but without this the header, footer and skip link stay in the tab
+  // order — a keyboard user tabs into links they cannot see. Measured with
+  // Playwright: Tab used to walk skip-link → brand → every nav item → language.
+  const behindGate = [
+    document.querySelector('.skip-link'),
+    document.querySelector('.site-header'),
+    document.querySelector('footer'),
+  ];
+
   let entered = hasEntered();
   let ratio = 0;
   let pointerId = null;
@@ -50,6 +60,7 @@ export function initGate() {
     home.classList.toggle('is-locked', !entered);
     setInert(content, !entered);
     if (content) content.setAttribute('aria-hidden', String(!entered));
+    for (const el of behindGate) setInert(el, !entered);
     document.body.classList.toggle('is-locked', !entered);
     // Keeps the pre-paint stylesheet rule in index.html in sync: `entered`
     // hides the gate so a reload never flashes it, and must be removed again

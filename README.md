@@ -23,6 +23,8 @@ test/
   views.test.mjs               渲染层测试（直接断言视图生成的 HTML）
   build.test.mjs               构建产物测试（双语路由、canonical/hreflang、体积预算）
   interaction.test.mjs         用 linkedom 驱动构建产物：门禁、语言链接、客户端路由
+  browser.test.mjs             真实 Chromium：视口回归、指针手势、键盘、axe、禁用 JS
+  helpers/static-server.mjs    复刻生产 try_files 的测试用静态服务器（不是测试文件）
 eslint.config.js               ESLint flat config（src 用浏览器全局，scripts/test 用 Node 全局）
 .prettierrc.json               代码风格，endOfLine 固定为 lf
 design/source/
@@ -46,25 +48,31 @@ npm run dev
 ## 构建、检查与测试
 
 ```bash
-npm run check     # lint + format:check + test，CI 跑的就是这一条
-npm test          # 只跑构建与测试
-npm run lint      # ESLint
-npm run format    # Prettier 就地改写
+npm install
+npx playwright install chromium   # 首次需要，供真实浏览器测试使用
+npm run check                     # lint + format:check + test，CI 跑的就是这一条
+npm test                          # 只跑构建与测试
+npm run lint                      # ESLint
+npm run format                    # Prettier 就地改写
 ```
 
 `npm test` 依次执行：
 
 1. `vite build` —— 打包 JS/CSS 与 `index.html`
 2. `node scripts/build-routes.mjs` —— 为双语共 12 个页面预渲染正文，并由 `src/meta.js` 生成 `sitemap.xml`
-3. `node --test` —— 自动发现 `test/` 下的全部测试
+3. `node --test test/*.test.mjs` —— 跑四个测试文件
 
-> 注意用 `node --test`（默认发现），不要写成 `node --test test`：把目录当位置参数传入时 Node 会把它当成模块路径，报 `MODULE_NOT_FOUND`。
+> 用显式 glob `test/*.test.mjs` 而不是 `node --test` 的默认发现：默认发现会把 `test/helpers/` 下的辅助模块也当成一个「零测试」的套件跑一遍。
+> 另外不要写成 `node --test test`：把目录当位置参数传入时 Node 会把它当成模块路径，报 `MODULE_NOT_FOUND`。
 
-三个测试文件：
+四个测试文件：
 
 - `test/views.test.mjs` —— 纯渲染层，直接断言视图生成的 HTML
 - `test/build.test.mjs` —— 构建产物：双语路由文件、canonical/hreflang、sitemap、体积预算
-- `test/interaction.test.mjs` —— 用 `linkedom` 把**构建产物**装进真实 DOM，驱动门禁、语言链接与客户端路由（测试套件唯一的运行时依赖）
+- `test/interaction.test.mjs` —— 用 `linkedom` 把**构建产物**装进 DOM，驱动门禁、语言链接与客户端路由
+- `test/browser.test.mjs` —— 驱动真实 Chromium：视口回归、指针手势、键盘可用性、axe 无障碍审计、禁用 JS 的行为
+
+前三者是字符串与合成 DOM 的断言；`browser.test.mjs` 才是唯一能抓住**布局类**缺陷的一层 —— 当初让站点不可用的门禁横屏问题就是纯布局问题，字符串和 linkedom 都表达不了（后者没有布局引擎）。axe 的对比度规则同样只在真实浏览器里有效。
 
 测试覆盖的关键契约：
 
@@ -73,7 +81,7 @@ npm run format    # Prettier 就地改写
 - 「重新进入」按钮始终渲染（回归：旧版它在 `state.entered ? … : ''` 之后，永远不会出现）
 - 每路由每语言有独立的 canonical / og:url / title，共 12 条互不相同
 - 每页三条 hreflang（`zh-CN` / `en` / `x-default`）互指，sitemap 带 `<xhtml:link>` 交替链接
-- 英文页不链回中文树，反之亦然；英文渲染里不出现任何未翻译的中文（只放行 `桜` 水印与语言按钮）
+- 英文页不链回中文树，反之亦然；英文渲染里不出现任何未翻译的中文（只放行 `桜` 水印与两处语言入口）
 - `/toy/`、`/notes/` 两种语言都 `noindex` 且不在 sitemap
 - 每页 HTML 里都有**预渲染正文**、没有占位符；`<html class="no-js">` 与握手脚本齐备
 - 门禁后的内容在静态标记里**不带** `inert`（否则无 JS 访客能读不能点）
@@ -82,6 +90,15 @@ npm run format    # Prettier 就地改写
 - 未知路径渲染 404 视图并移除 canonical 与 hreflang
 - 外部链接都带 `rel="noopener noreferrer"`；`dist/images` 总重 < 400 KB、单张最大 < 120 KB
 - 构建产物里不再出现 `jsdelivr`
+
+真实浏览器层另外保证：
+
+- **解锁控件在 844×390、844×330、1280×800 下都完整落在视口内**（`boundingBox` 逐边比对，这是横屏回归的永久防线）
+- 鼠标**拖动**胶囊可以进入，不只是点击
+- 键盘聚焦后按 Enter 可以进入，且解锁后焦点落到 `#top`
+- **锁定时 Tab 走不到被浮层挡住的 header / footer**（进入后才恢复）
+- 八个可索引页面 axe 零违规（含颜色对比度）
+- **禁用 JS** 时门禁隐藏、正文可见可点，语言链接仍可用
 
 代码风格由 Prettier 统一（`.prettierrc.json`，`endOfLine: lf`），静态检查由 ESLint flat config 负责（`eslint.config.js`，`src/` 用浏览器全局，`scripts/`、`test/` 用 Node 全局）。
 
@@ -183,7 +200,8 @@ rsync -a --delete --exclude='.git' ./ /opt/static-site/site/
 
 ## 尚未覆盖的部分
 
-- **无 JS 可用性与像素级渲染**没有进 CI。它们是本地用无头浏览器 + Pillow 验证的：把 `dist` 复制一份移除所有 `<script>` 后截图，确认首页 `accent` 像素为 0（门禁已隐藏）而正文页正常渲染。要进 CI 需要再加浏览器与 Python 依赖，收益不明显。
-- 无障碍目前只有静态检查（`aria-current`、`inert` 状态、可见焦点、对比度取值），没有跑过 axe 之类的自动化审计。
+- **视觉回归**没有进 CI：目前没有像素级快照对比（截图 diff）。真实浏览器已经跑了视口与布局断言、也跑了 axe，但「这一版和上一版长得一样吗」还需要人眼或快照工具。
+- 无障碍审计只覆盖 axe 能自动判定的规则（对比度、名称匹配、表单标签、地标等），键盘焦点顺序有一条专门的回归测试，但读屏器实测、放大到 200%、简体中文之外的朗读仍未验证。
 - 英文文案是我按中文原文翻译的，你如果有更贴合的表达可以直接改 `src/i18n.js` 与 `src/data.js`，测试会挡住漏翻。
 - `design/source/optimize_assets.py` 需要本机有 Pillow，未接入 CI。
+- `/toy/` 与 `/notes/` 仍是占位页，**需要你提供真实内容**；补上后把 `src/meta.js` 里对应的 `noindex: true` 去掉即可。

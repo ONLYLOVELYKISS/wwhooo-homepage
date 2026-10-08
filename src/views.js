@@ -33,16 +33,25 @@ export function header(activeId = '') {
     return `<a href="${pathFor(id, lang)}"${current}>${t().nav[index]}</a>`;
   }).join('');
 
-  // The language control is a real link to the counterpart URL: crawlable,
-  // shareable, middle-clickable, and it still works with JavaScript disabled.
-  const other = otherLang(lang);
-  const target = pathFor(getRouteId() ?? 'home', other);
-
   return `<header class="site-header">
-      <a class="brand" href="${pathFor('home', lang)}" aria-label="${site.author} — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
+      <a class="brand" href="${pathFor('home', lang)}"><span>WW</span><b>LINN</b></a>
       <nav aria-label="${t().navLabel}">${items}</nav>
-      <a class="language" href="${target}" hreflang="${HTML_LANG[other]}" lang="${HTML_LANG[other]}" aria-label="${t().languageLabel}">${t().language}</a>
+      ${languageLink()}
     </header>`;
+}
+
+/**
+ * The language control is a real link to the counterpart URL: crawlable,
+ * shareable, middle-clickable, and it works with JavaScript disabled.
+ *
+ * The switch label is a visually-hidden suffix rather than an `aria-label`,
+ * because axe's label-content-name-mismatch rule requires the accessible name to
+ * contain the visible text — "EN" plus an aria-label of "切换到英文" fails it.
+ */
+function languageLink() {
+  const other = otherLang(getLang());
+  const target = pathFor(getRouteId() ?? 'home', other);
+  return `<a class="language" href="${target}" hreflang="${HTML_LANG[other]}" lang="${HTML_LANG[other]}">${t().language}<span class="sr-only"> — ${t().languageLabel}</span></a>`;
 }
 
 export function footer() {
@@ -78,6 +87,7 @@ function entryGate() {
           <span class="swipe-text">${t().unlock}</span>
         </button>
         <p class="gate-foot">${t().gateFoot}</p>
+        <p class="gate-alt"><a href="${pathFor(getRouteId() ?? 'home', otherLang(getLang()))}" hreflang="${HTML_LANG[otherLang(getLang())]}" lang="${HTML_LANG[otherLang(getLang())]}">${t().otherLanguageName}</a></p>
       </div>
       <b class="gate-mark" aria-hidden="true">桜</b>
     </section>`;

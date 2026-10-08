@@ -24,16 +24,26 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
+      # The browser suite drives real Chromium, which is the only way to test the
+      # gate's viewport behaviour and to run axe with layout (colour contrast).
+      # Cached so a normal run pays ~1 minute at most.
+      - name: Cache the Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
       # Lint, format check, then build + generate per-route HTML/sitemap + run
-      # the suite. The suite enforces image-weight budgets, per-route canonicals
-      # and the no-JS contract, so a regression fails the deploy instead of
-      # shipping.
+      # the whole suite (render, artifact, interaction and real-browser).
       - name: Lint, format check, test and build
         run: npm run check
 

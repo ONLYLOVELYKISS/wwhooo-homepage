@@ -47,11 +47,14 @@ const render = (id, lang = 'zh') => {
 const CJK = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/;
 
 /**
- * Remove the places where a Chinese glyph is deliberate: the 桜 watermark and
- * the language switcher, which labels itself in the language it switches to.
+ * Remove the places where a Chinese glyph is deliberate: the 桜 watermark, and
+ * the two language controls, which name the other language in its own script.
  */
 const stripIntentionalGlyphs = (html) =>
-  html.replace(/<b class="gate-mark"[^>]*>.*?<\/b>/gs, '').replace(/(<a class="language"[^>]*>).*?(<\/a>)/gs, '$1$2');
+  html
+    .replace(/<b class="gate-mark"[^>]*>.*?<\/b>/gs, '')
+    .replace(/(<a class="language"[^>]*>).*?(<\/a>)/gs, '$1$2')
+    .replace(/(<p class="gate-alt">).*?(<\/p>)/gs, '$1$2');
 
 test('every route in meta.js has a renderer and vice versa', () => {
   assert.deepEqual(Object.keys(RENDERERS).sort(), ROUTE_DEFS.map((def) => def.id).sort());
