@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-CBToxUZH.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C6JXFOX7.css">
+    <script type="module" crossorigin src="/assets/index-1UGk1tKe.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-LnVCvRso.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -146,8 +146,17 @@
     <div id="app" data-prerendered="toy:en">
 <a class="skip-link" href="#top">Skip to main content</a><header class="site-header">
       <a class="brand" href="/en/"><span>WW</span><b>LINN</b></a>
-      <nav aria-label="Main navigation"><a href="/en/">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a></nav>
+      <nav aria-label="Main navigation"><a href="/en/">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a><a href="/en/search/">Search</a></nav>
       <a class="language" href="/toy/" hreflang="zh-CN" lang="zh-CN">中<span class="sr-only"> — Switch to Chinese</span></a>
+      <label class="theme-control" for="theme-select">
+      <span class="sr-only">Choose theme mode</span>
+      <span aria-hidden="true">◐</span>
+      <select id="theme-select" name="theme" data-theme-control aria-label="Choose theme mode">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
     </header><main id="top" tabindex="-1"><section class="subsite-page lab">
       <a class="back-link" href="/en/">← Back home</a>
       <span class="kicker">SUBSITE / TOY LAB</span>
@@ -180,6 +189,8 @@
         var entered = false;
         try {
           entered = sessionStorage.getItem('wwhooo-entered') === '1';
+          var theme = localStorage.getItem('wwhooo-theme');
+          if (theme === 'light' || theme === 'dark' || theme === 'system') root.dataset.theme = theme;
         } catch (e) {
           /* private mode */
         }

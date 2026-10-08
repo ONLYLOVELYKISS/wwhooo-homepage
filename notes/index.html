@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-CBToxUZH.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C6JXFOX7.css">
+    <script type="module" crossorigin src="/assets/index-1UGk1tKe.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-LnVCvRso.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -146,8 +146,17 @@
     <div id="app" data-prerendered="notes:zh">
 <a class="skip-link" href="#top">跳到主要内容</a><header class="site-header">
       <a class="brand" href="/"><span>WW</span><b>LINN</b></a>
-      <nav aria-label="主导航"><a href="/">首页</a><a href="/engine/">工具</a><a href="/profile/">档案</a><a href="/works/">作品</a></nav>
+      <nav aria-label="主导航"><a href="/">首页</a><a href="/engine/">工具</a><a href="/profile/">档案</a><a href="/works/">作品</a><a href="/search/">搜索</a></nav>
       <a class="language" href="/en/notes/" hreflang="en" lang="en">EN<span class="sr-only"> — 切换到英文</span></a>
+      <label class="theme-control" for="theme-select">
+      <span class="sr-only">选择主题模式</span>
+      <span aria-hidden="true">◐</span>
+      <select id="theme-select" name="theme" data-theme-control aria-label="选择主题模式">
+        <option value="system">跟随系统</option>
+        <option value="light">浅色</option>
+        <option value="dark">深色</option>
+      </select>
+    </label>
     </header><main id="top" tabindex="-1"><section class="subsite-page notes">
       <a class="back-link" href="/">← 返回主站</a>
       <span class="kicker">SUBSITE / NIGHT NOTES</span>
@@ -180,6 +189,8 @@
         var entered = false;
         try {
           entered = sessionStorage.getItem('wwhooo-entered') === '1';
+          var theme = localStorage.getItem('wwhooo-theme');
+          if (theme === 'light' || theme === 'dark' || theme === 'system') root.dataset.theme = theme;
         } catch (e) {
           /* private mode */
         }

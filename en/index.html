@@ -147,8 +147,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-CBToxUZH.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C6JXFOX7.css">
+    <script type="module" crossorigin src="/assets/index-1UGk1tKe.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-LnVCvRso.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -156,8 +156,17 @@
     <div id="app" data-prerendered="home:en">
 <a class="skip-link" href="#top">Skip to main content</a><header class="site-header">
       <a class="brand" href="/en/"><span>WW</span><b>LINN</b></a>
-      <nav aria-label="Main navigation"><a href="/en/" aria-current="page">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a></nav>
+      <nav aria-label="Main navigation"><a href="/en/" aria-current="page">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a><a href="/en/search/">Search</a></nav>
       <a class="language" href="/" hreflang="zh-CN" lang="zh-CN">中<span class="sr-only"> — Switch to Chinese</span></a>
+      <label class="theme-control" for="theme-select">
+      <span class="sr-only">Choose theme mode</span>
+      <span aria-hidden="true">◐</span>
+      <select id="theme-select" name="theme" data-theme-control aria-label="Choose theme mode">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
     </header><main id="top" tabindex="-1"><div class="engine-home is-locked" id="engine-home">
       <section class="entry-gate" id="entry-gate" role="region" tabindex="0" aria-label="Swipe up to enter" aria-describedby="gate-instruction">
       <span class="sr-only" id="gate-instruction">Swipe up anywhere to enter the personal engine Keyboard users can press Enter or Space to enter.</span>
@@ -274,6 +283,8 @@
         var entered = false;
         try {
           entered = sessionStorage.getItem('wwhooo-entered') === '1';
+          var theme = localStorage.getItem('wwhooo-theme');
+          if (theme === 'light' || theme === 'dark' || theme === 'system') root.dataset.theme = theme;
         } catch (e) {
           /* private mode */
         }
