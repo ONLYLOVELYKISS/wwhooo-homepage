@@ -20,8 +20,11 @@ src/
 scripts/
   build-routes.mjs             构建后为双语共 12 个页面预渲染正文 + 生成 sitemap.xml
 test/
-  views.test.mjs               渲染层测试（直接断言生成的 HTML）
-  build.test.mjs               构建产物测试（体积预算、canonical、hreflang、路由文件）
+  views.test.mjs               渲染层测试（直接断言视图生成的 HTML）
+  build.test.mjs               构建产物测试（双语路由、canonical/hreflang、体积预算）
+  interaction.test.mjs         用 linkedom 驱动构建产物：门禁、语言链接、客户端路由
+eslint.config.js               ESLint flat config（src 用浏览器全局，scripts/test 用 Node 全局）
+.prettierrc.json               代码风格，endOfLine 固定为 lf
 design/source/
   sakura-original.jpg          主视觉母版（不发布）
   optimize_assets.py           从母版生成 webp/jpg 派生图与品牌图标
@@ -40,32 +43,47 @@ npm run dev
 
 开发服务器直接用 Vite 的 HTML fallback，`/engine/`、`/en/engine/` 等路径由客户端路由渲染 —— 这与生产环境不同（生产是每个路由每个语言一个真实文件），但页面内容一致。
 
-## 构建与测试
+## 构建、检查与测试
 
 ```bash
-npm test
+npm run check     # lint + format:check + test，CI 跑的就是这一条
+npm test          # 只跑构建与测试
+npm run lint      # ESLint
+npm run format    # Prettier 就地改写
 ```
 
 `npm test` 依次执行：
 
 1. `vite build` —— 打包 JS/CSS 与 `index.html`
-2. `node scripts/build-routes.mjs` —— 为 `/engine/` 等 5 个路由生成真实 HTML，并由 `src/meta.js` 生成 `sitemap.xml`
-3. `node --test` —— 自动发现 `test/` 下的渲染层 + 构建产物测试
+2. `node scripts/build-routes.mjs` —— 为双语共 12 个页面预渲染正文，并由 `src/meta.js` 生成 `sitemap.xml`
+3. `node --test` —— 自动发现 `test/` 下的全部测试
 
 > 注意用 `node --test`（默认发现），不要写成 `node --test test`：把目录当位置参数传入时 Node 会把它当成模块路径，报 `MODULE_NOT_FOUND`。
 
-测试覆盖的内容（都在 `test/` 里，可直接阅读）：
+三个测试文件：
 
-- 每个路由都能渲染，且 `src/meta.js` 与实际渲染器一一对应
-- 门禁是可聚焦的 `<button>`，不再使用 `input[type=range]`
-- 「重新进入」按钮始终渲染（回归测试：旧版它在 `state.entered ? … : ''` 之后，永远不会出现）
-- 每路由的 canonical / og:url / title 互不相同
-- `/toy/`、`/notes/` 是 `noindex` 且不在 sitemap 里
-- 英文模式下不出现任何未翻译的中文（只放行 `桜` 水印与语言按钮）
-- `zh` / `en` 字典键完全一致；`data.js` 里每个 `{zh, en}` 对都非空且英文不含中文
-- 外部链接都带 `rel="noopener noreferrer"`
-- `dist/images` 总重 < 400 KB，最大单张 < 120 KB
+- `test/views.test.mjs` —— 纯渲染层，直接断言视图生成的 HTML
+- `test/build.test.mjs` —— 构建产物：双语路由文件、canonical/hreflang、sitemap、体积预算
+- `test/interaction.test.mjs` —— 用 `linkedom` 把**构建产物**装进真实 DOM，驱动门禁、语言链接与客户端路由（测试套件唯一的运行时依赖）
+
+测试覆盖的关键契约：
+
+- 每个路由两种语言都能渲染，且 `src/meta.js` 与实际渲染器一一对应
+- 门禁是可聚焦的 `<button>`，不是 `input[type=range]`
+- 「重新进入」按钮始终渲染（回归：旧版它在 `state.entered ? … : ''` 之后，永远不会出现）
+- 每路由每语言有独立的 canonical / og:url / title，共 12 条互不相同
+- 每页三条 hreflang（`zh-CN` / `en` / `x-default`）互指，sitemap 带 `<xhtml:link>` 交替链接
+- 英文页不链回中文树，反之亦然；英文渲染里不出现任何未翻译的中文（只放行 `桜` 水印与语言按钮）
+- `/toy/`、`/notes/` 两种语言都 `noindex` 且不在 sitemap
+- 每页 HTML 里都有**预渲染正文**、没有占位符；`<html class="no-js">` 与握手脚本齐备
+- 门禁后的内容在静态标记里**不带** `inert`（否则无 JS 访客能读不能点）
+- 首次 `mount()` **复用**预渲染节点而不是重建（断言 DOM 节点引用同一性）
+- `inert`、`body.is-locked`、`sessionStorage` 在进入／重新锁定后状态正确
+- 未知路径渲染 404 视图并移除 canonical 与 hreflang
+- 外部链接都带 `rel="noopener noreferrer"`；`dist/images` 总重 < 400 KB、单张最大 < 120 KB
 - 构建产物里不再出现 `jsdelivr`
+
+代码风格由 Prettier 统一（`.prettierrc.json`，`endOfLine: lf`），静态检查由 ESLint flat config 负责（`eslint.config.js`，`src/` 用浏览器全局，`scripts/`、`test/` 用 Node 全局）。
 
 ## 部署（Debian + Docker + Cloudflare Tunnel）
 
@@ -165,8 +183,7 @@ rsync -a --delete --exclude='.git' ./ /opt/static-site/site/
 
 ## 尚未覆盖的部分
 
-- 客户端首次加载后会把同一份内容**再渲染一次**（`mount()` 无条件写 `innerHTML`）。当前页面很小，代价可忽略；若要更省，可以在 `mount()` 里比对预渲染标记与当前路由，一致时只做事件绑定而不重写 DOM。
-- 没有 lint / format / 类型检查（`main.js` 已拆分，但未引入 ESLint 与 Prettier）
-- 已提交的测试是**渲染输出与产物的断言**，没有真实 DOM。门禁手势、滚轮、焦点转移、语言切换以及「禁用 JS 仍可用」是用仓库外的 `linkedom` 与无头浏览器截图人工验证的（见提交说明），未接入 CI
-- 英文文案是我按中文原文翻译的，你如果有更贴合的表达可以直接改 `src/i18n.js` 与 `src/data.js`
-- `design/source/optimize_assets.py` 需要本机有 Pillow，未接入 CI
+- **无 JS 可用性与像素级渲染**没有进 CI。它们是本地用无头浏览器 + Pillow 验证的：把 `dist` 复制一份移除所有 `<script>` 后截图，确认首页 `accent` 像素为 0（门禁已隐藏）而正文页正常渲染。要进 CI 需要再加浏览器与 Python 依赖，收益不明显。
+- 无障碍目前只有静态检查（`aria-current`、`inert` 状态、可见焦点、对比度取值），没有跑过 axe 之类的自动化审计。
+- 英文文案是我按中文原文翻译的，你如果有更贴合的表达可以直接改 `src/i18n.js` 与 `src/data.js`，测试会挡住漏翻。
+- `design/source/optimize_assets.py` 需要本机有 Pillow，未接入 CI。

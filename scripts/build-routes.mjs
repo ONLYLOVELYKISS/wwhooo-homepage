@@ -72,8 +72,7 @@ const setAlternate = (html, hreflang, href) =>
   );
 
 /** The gate image only appears on the homepage; do not preload it elsewhere. */
-const removePreload = (html) =>
-  html.replace(/\s*<link\s+rel="preload"[\s\S]*?>\s*(?=<!--|<script|<title)/, '\n    ');
+const removePreload = (html) => html.replace(/\s*<link\s+rel="preload"[\s\S]*?>\s*(?=<!--|<script|<title)/, '\n    ');
 
 /**
  * Stamp the container with the route/language it was prerendered for, so the
@@ -81,12 +80,7 @@ const removePreload = (html) =>
  * rebuilding identical markup. Left empty in the dev shell.
  */
 const setStamp = (html, def, lang) =>
-  replaceOnce(
-    html,
-    /(<div id="app" data-prerendered=")[^"]*(")/,
-    `$1${def.id}:${lang}$2`,
-    '#app data-prerendered',
-  );
+  replaceOnce(html, /(<div id="app" data-prerendered=")[^"]*(")/, `$1${def.id}:${lang}$2`, '#app data-prerendered');
 
 /**
  * The boot placeholder and the prerendered page occupy the same slot. Matched

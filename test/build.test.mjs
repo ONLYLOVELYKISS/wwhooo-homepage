@@ -29,7 +29,10 @@ test('the build produced one HTML file per route, per language', async () => {
     assert.ok(info.size > 0, `${routePath} is empty`);
   }
   const englishEntries = await readdir(join(dist, 'en'), { withFileTypes: true });
-  const englishDirs = englishEntries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+  const englishDirs = englishEntries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
   assert.deepEqual(englishDirs, ['engine', 'notes', 'profile', 'toy', 'works']);
   assert.ok(
     englishEntries.some((entry) => entry.isFile() && entry.name === 'index.html'),
@@ -46,11 +49,7 @@ test('each page declares its own language, canonical and title', async () => {
       const routePath = def.path[lang];
       const html = await readRoute(routePath);
 
-      assert.match(
-        html,
-        new RegExp(`<html lang="${escapeRe(HTML_LANG[lang])}"`),
-        `${routePath} <html lang>`,
-      );
+      assert.match(html, new RegExp(`<html lang="${escapeRe(HTML_LANG[lang])}"`), `${routePath} <html lang>`);
       const canonical = `${SITE_URL}${routePath}`;
       assert.match(html, new RegExp(`<link rel="canonical" href="${escapeRe(canonical)}"`), `${routePath} canonical`);
       assert.match(html, new RegExp(`<meta property="og:url" content="${escapeRe(canonical)}"`), `${routePath} og:url`);
@@ -129,8 +128,11 @@ test('no-JS visitors get a usable homepage instead of an unopenable gate', async
   const home = await readRoute('/');
   // The gate is hidden by a stylesheet rule when scripting is off, and the
   // content behind it must therefore not be inert in the static markup —
-  // otherwise it is readable but unusable.
-  assert.match(home, /html\.no-js \.entry-gate,\s*\n\s*html\.entered \.entry-gate\{display:none!important\}/);
+  // otherwise it is readable but unusable. Matched on the selectors and the
+  // declaration rather than on exact whitespace, which the formatter owns.
+  const gateRule = home.match(/html\.no-js \.entry-gate,[\s\S]{0,80}?html\.entered \.entry-gate\s*\{[^}]*\}/);
+  assert.ok(gateRule, 'the no-js / entered gate-hiding rule must ship inline in <head>');
+  assert.match(gateRule[0], /display:\s*none\s*!important/);
   assert.match(home, /<div class="home-content" id="home-content">/);
   assert.doesNotMatch(home, /id="home-content"[^>]*inert/);
 });
@@ -209,7 +211,10 @@ test('no artifact reaches for the CDN', async () => {
 test('the icons, manifest and robots file ship', async () => {
   const manifest = JSON.parse(await read('manifest.webmanifest'));
   assert.equal(manifest.start_url, '/');
-  assert.ok(manifest.icons.some((icon) => icon.sizes === '512x512'), 'a 512px icon is required to be installable');
+  assert.ok(
+    manifest.icons.some((icon) => icon.sizes === '512x512'),
+    'a 512px icon is required to be installable',
+  );
   for (const file of ['icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'robots.txt']) {
     const info = await stat(join(dist, file));
     assert.ok(info.size > 0, `${file} is missing from dist`);

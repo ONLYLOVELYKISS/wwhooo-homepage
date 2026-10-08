@@ -110,7 +110,10 @@ export const subsites = [
     name: 'NIGHT NOTES',
     tone: 'notes',
     title: l('夜间札记', 'Night Notes'),
-    desc: l('把观察、片段和还没有结论的想法放在这里。', 'Observations, fragments, and thoughts without conclusions yet.'),
+    desc: l(
+      '把观察、片段和还没有结论的想法放在这里。',
+      'Observations, fragments, and thoughts without conclusions yet.',
+    ),
   },
 ];
 
@@ -128,8 +131,7 @@ export const photo = {
 };
 
 /** Responsive WebP candidate list for the <source> element. */
-export const photoSrcset = (widths = photo.widths) =>
-  widths.map((w) => `/images/sakura-${w}.webp ${w}w`).join(', ');
+export const photoSrcset = (widths = photo.widths) => widths.map((w) => `/images/sakura-${w}.webp ${w}w`).join(', ');
 
 export const links = [
   { name: 'GitHub', url: site.github, rel: 'me' },

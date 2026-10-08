@@ -51,15 +51,10 @@ const CJK = /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/;
  * the language switcher, which labels itself in the language it switches to.
  */
 const stripIntentionalGlyphs = (html) =>
-  html
-    .replace(/<b class="gate-mark"[^>]*>.*?<\/b>/gs, '')
-    .replace(/(<a class="language"[^>]*>).*?(<\/a>)/gs, '$1$2');
+  html.replace(/<b class="gate-mark"[^>]*>.*?<\/b>/gs, '').replace(/(<a class="language"[^>]*>).*?(<\/a>)/gs, '$1$2');
 
 test('every route in meta.js has a renderer and vice versa', () => {
-  assert.deepEqual(
-    Object.keys(RENDERERS).sort(),
-    ROUTE_DEFS.map((def) => def.id).sort(),
-  );
+  assert.deepEqual(Object.keys(RENDERERS).sort(), ROUTE_DEFS.map((def) => def.id).sort());
 });
 
 test('the route table exposes both language trees', () => {
@@ -227,8 +222,14 @@ test('subsite cards use a short title, not a full sentence', () => {
 test('chaoxing-sign-cli is archived, not featured', () => {
   // Automating a third party's check-in flow is a compliance grey area, so it
   // must not appear in the featured project list.
-  assert.equal(data.projects.some((p) => p.name === 'chaoxing-sign-cli'), false);
-  assert.equal(data.archive.some((p) => p.name === 'chaoxing-sign-cli'), true);
+  assert.equal(
+    data.projects.some((p) => p.name === 'chaoxing-sign-cli'),
+    false,
+  );
+  assert.equal(
+    data.archive.some((p) => p.name === 'chaoxing-sign-cli'),
+    true,
+  );
 
   const works = render('works');
   const featured = works.slice(works.indexOf('works-list'), works.indexOf('archive-section'));
@@ -240,7 +241,7 @@ test('chaoxing-sign-cli is archived, not featured', () => {
   assert.doesNotMatch(archived, /<h2>chaoxing-sign-cli<\/h2>/, 'archive entries get no headline treatment');
 });
 
-test("the profile contact links to the real mailbox", () => {
+test('the profile contact links to the real mailbox', () => {
   assert.equal(data.site.email, 'wwhooo@icloud.com');
   assert.match(render('profile'), /href="mailto:wwhooo@icloud\.com"/);
 });

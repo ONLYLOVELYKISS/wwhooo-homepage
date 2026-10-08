@@ -30,11 +30,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Builds, generates per-route HTML + sitemap, then runs the test suite.
-      # The suite enforces image-weight budgets and per-route canonical tags, so
-      # a regression fails the deploy instead of shipping.
-      - name: Test and build static files
-        run: npm test
+      # Lint, format check, then build + generate per-route HTML/sitemap + run
+      # the suite. The suite enforces image-weight budgets, per-route canonicals
+      # and the no-JS contract, so a regression fails the deploy instead of
+      # shipping.
+      - name: Lint, format check, test and build
+        run: npm run check
 
       - name: Keep the built site for debugging
         if: failure()

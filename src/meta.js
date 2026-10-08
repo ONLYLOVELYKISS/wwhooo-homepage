@@ -38,10 +38,7 @@ export const ROUTE_DEFS = [
     id: 'engine',
     path: { zh: '/engine/', en: enPath('/engine/') },
     title: l('工具 — Linn', 'Tools — Linn'),
-    description: l(
-      '常用工具入口：搜索、构建、AI 与调试。',
-      'Everyday tools: search, build, AI, and debugging.',
-    ),
+    description: l('常用工具入口：搜索、构建、AI 与调试。', 'Everyday tools: search, build, AI, and debugging.'),
   },
   {
     id: 'profile',
@@ -65,20 +62,14 @@ export const ROUTE_DEFS = [
     id: 'toy',
     path: { zh: '/toy/', en: enPath('/toy/') },
     title: l('TOY 实验场 — Linn', 'TOY Lab — Linn'),
-    description: l(
-      '阶段性实验、脚本和可以运行的小想法。',
-      'Experiments, scripts, and small ideas that actually run.',
-    ),
+    description: l('阶段性实验、脚本和可以运行的小想法。', 'Experiments, scripts, and small ideas that actually run.'),
     noindex: true,
   },
   {
     id: 'notes',
     path: { zh: '/notes/', en: enPath('/notes/') },
     title: l('夜间札记 — Linn', 'Night Notes — Linn'),
-    description: l(
-      '观察、片段和还没有结论的想法。',
-      'Observations, fragments, and thoughts without conclusions yet.',
-    ),
+    description: l('观察、片段和还没有结论的想法。', 'Observations, fragments, and thoughts without conclusions yet.'),
     noindex: true,
   },
 ];
