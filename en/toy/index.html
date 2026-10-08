@@ -35,7 +35,14 @@
       href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
     />
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"Person","name":"Linn","url":"https://wwhooo.com/","sameAs":["https://github.com/ONLYLOVELYKISS"],"homeLocation":{"@type":"Place","name":"Xi'an, China"}}
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Linn",
+        "url": "https://wwhooo.com/",
+        "sameAs": ["https://github.com/ONLYLOVELYKISS"],
+        "homeLocation": { "@type": "Place", "name": "Xi'an, China" }
+      }
     </script>
 
     <style>
@@ -44,17 +51,60 @@
          build-routes.mjs rewrites <html lang> per language tree, so the two
          language variants below are picked with plain CSS rather than by
          rewriting this markup in every generated file. */
-      .boot-fallback{min-height:100svh;padding:12vh max(16px,8vw);background:#e1e9e4;color:#141c1b;font:11px/1.8 'DM Mono',ui-monospace,monospace}
-      .boot-fallback h1{margin:12vh 0 4vh;font:italic clamp(4rem,12vw,11rem)/.8 'Instrument Serif',Georgia,serif;letter-spacing:-.08em;font-weight:400}
-      .boot-fallback p{color:#5e6d67;max-width:420px}
-      .boot-fallback nav{display:flex;flex-wrap:wrap;gap:24px;margin-top:8vh}
-      .boot-fallback .lang-group{display:contents}
-      .boot-fallback a{color:#bf5945;text-decoration:none}
-      .boot-fallback a:hover{text-decoration:underline}
-      .boot-noscript{display:none}
-      html[lang='en'] .boot-zh{display:none}
-      html:not([lang='en']) .boot-en{display:none}
-      @media (prefers-reduced-motion:reduce){.boot-fallback *{animation:none!important;transition:none!important}}
+      .boot-fallback {
+        min-height: 100svh;
+        padding: 12vh max(16px, 8vw);
+        background: #e1e9e4;
+        color: #141c1b;
+        font:
+          11px/1.8 'DM Mono',
+          ui-monospace,
+          monospace;
+      }
+      .boot-fallback h1 {
+        margin: 12vh 0 4vh;
+        font:
+          italic clamp(4rem, 12vw, 11rem)/0.8 'Instrument Serif',
+          Georgia,
+          serif;
+        letter-spacing: -0.08em;
+        font-weight: 400;
+      }
+      .boot-fallback p {
+        color: #5e6d67;
+        max-width: 420px;
+      }
+      .boot-fallback nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin-top: 8vh;
+      }
+      .boot-fallback .lang-group {
+        display: contents;
+      }
+      .boot-fallback a {
+        color: #bf5945;
+        text-decoration: none;
+      }
+      .boot-fallback a:hover {
+        text-decoration: underline;
+      }
+      .boot-noscript {
+        display: none;
+      }
+      html[lang='en'] .boot-zh {
+        display: none;
+      }
+      html:not([lang='en']) .boot-en {
+        display: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot-fallback * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
       /* Without scripting the overlay would be unopenable, so hide it and let
          visitors read the prerendered homepage. `entered` is set by the inline
          handshake below for returning visitors, so a reload does not flash the
@@ -62,13 +112,17 @@
          src/style.css) so both rules are guaranteed to be in effect at first
          paint even if the stylesheet is slow or fails. */
       html.no-js .entry-gate,
-      html.entered .entry-gate{display:none!important}
+      html.entered .entry-gate {
+        display: none !important;
+      }
     </style>
-    <script type="module" crossorigin src="/assets/index-qH68yiDU.js"></script>
+    <script type="module" crossorigin src="/assets/index-j47o-Yea.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-RHnz3GF5.css">
   </head>
   <body>
-    <div id="app">
+    <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
+         here, so the dev shell still renders from scratch. -->
+    <div id="app" data-prerendered="toy:en">
 <a class="skip-link" href="#top">Skip to main content</a><header class="site-header">
       <a class="brand" href="/en/" aria-label="Linn — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
       <nav aria-label="Main navigation"><a href="/en/">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a></nav>
