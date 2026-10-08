@@ -3,14 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Linn — Things worth keeping</title>
+    <title>Linn — 值得留下的东西</title>
     <meta name="description" content="Linn 的个人主页：摄影、软件项目、个人档案与常用工具。" />
     <link rel="canonical" href="https://wwhooo.com/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/" />
+    <link rel="alternate" hreflang="en" href="https://wwhooo.com/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://wwhooo.com/" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#e1e9e4" />
 
-    <meta property="og:title" content="Linn — Things worth keeping" />
-    <meta property="og:description" content="摄影、软件项目、个人档案与常用工具。" />
+    <meta property="og:title" content="Linn — 值得留下的东西" />
+    <meta property="og:description" content="Linn 的个人主页：摄影、软件项目、个人档案与常用工具。" />
     <meta property="og:url" content="https://wwhooo.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="wwhooo.com" />
@@ -47,14 +50,20 @@
 
     <style>
       /* Boot placeholder, shown until the module bundle paints. Shares the
-         palette and families of src/style.css so there is no colour jump. */
+         palette and families of src/style.css so there is no colour jump.
+         build-routes.mjs rewrites <html lang> per language tree, so the two
+         language variants below are picked with plain CSS rather than by
+         rewriting this markup in every generated file. */
       .boot-fallback{min-height:100svh;padding:12vh max(16px,8vw);background:#e1e9e4;color:#141c1b;font:11px/1.8 'DM Mono',ui-monospace,monospace}
       .boot-fallback h1{margin:12vh 0 4vh;font:italic clamp(4rem,12vw,11rem)/.8 'Instrument Serif',Georgia,serif;letter-spacing:-.08em;font-weight:400}
       .boot-fallback p{color:#5e6d67;max-width:420px}
       .boot-fallback nav{display:flex;flex-wrap:wrap;gap:24px;margin-top:8vh}
+      .boot-fallback .lang-group{display:contents}
       .boot-fallback a{color:#bf5945;text-decoration:none}
       .boot-fallback a:hover{text-decoration:underline}
       .boot-noscript{display:none}
+      html[lang='en'] .boot-zh{display:none}
+      html:not([lang='en']) .boot-en{display:none}
       @media (prefers-reduced-motion:reduce){.boot-fallback *{animation:none!important;transition:none!important}}
     </style>
     <noscript>
@@ -63,23 +72,35 @@
         .boot-noscript{display:block}
       </style>
     </noscript>
-    <script type="module" crossorigin src="/assets/index-Cqvv8raa.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-sqObelKX.css">
+    <script type="module" crossorigin src="/assets/index-Bh4_5oHQ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-RHnz3GF5.css">
   </head>
   <body>
     <div id="app">
       <div class="boot-fallback">
         <span>WW / LINN</span>
         <h1>Things<br /><i>worth</i><br />keeping.</h1>
-        <p class="boot-loading">个人主页正在加载。<br />Personal homepage loading.</p>
+        <p class="boot-loading">
+          <span class="boot-zh">个人主页正在加载。</span>
+          <span class="boot-en">Personal homepage loading.</span>
+        </p>
         <p class="boot-noscript">
-          这个站点需要 JavaScript 才能浏览完整内容。<br />
-          This site needs JavaScript to render its full content. The links below still work.
+          <span class="boot-zh">这个站点需要 JavaScript 才能浏览完整内容，下面的链接仍然可用。</span>
+          <span class="boot-en">This site needs JavaScript to render its full content. The links below still work.</span>
         </p>
         <nav>
-          <a href="/engine/">ENGINE</a>
-          <a href="/profile/">PROFILE</a>
-          <a href="/works/">WORKS</a>
+          <span class="lang-group boot-zh">
+            <a href="/engine/">ENGINE</a>
+            <a href="/profile/">PROFILE</a>
+            <a href="/works/">WORKS</a>
+            <a href="/en/">EN</a>
+          </span>
+          <span class="lang-group boot-en">
+            <a href="/en/engine/">ENGINE</a>
+            <a href="/en/profile/">PROFILE</a>
+            <a href="/en/works/">WORKS</a>
+            <a href="/" hreflang="zh-CN" lang="zh-CN">中文</a>
+          </span>
           <a href="https://github.com/ONLYLOVELYKISS">GITHUB</a>
         </nav>
       </div>

@@ -1,7 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://wwhooo.com/</loc></url>
-  <url><loc>https://wwhooo.com/engine/</loc></url>
-  <url><loc>https://wwhooo.com/profile/</loc></url>
-  <url><loc>https://wwhooo.com/works/</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://wwhooo.com/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/engine/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/engine/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/engine/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/engine/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/en/engine/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/engine/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/engine/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/engine/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/profile/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/profile/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/profile/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/profile/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/en/profile/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/profile/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/profile/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/profile/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/works/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/works/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/works/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/works/"/>
+  </url>
+  <url>
+    <loc>https://wwhooo.com/en/works/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://wwhooo.com/works/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wwhooo.com/en/works/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://wwhooo.com/works/"/>
+  </url>
 </urlset>
