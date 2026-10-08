@@ -109,12 +109,9 @@ test('a click enters, and a keyboard user can enter too', async () => {
   assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
 
   // Focus must land somewhere meaningful: the gate is inert now, so leaving it
-  // on the button would strand keyboard users.
-  assert.equal(
-    await page.evaluate(() => document.activeElement?.id),
-    'top',
-    'focus should move into the revealed content',
-  );
+  // on the button would strand keyboard users. The focus move happens on the
+  // next animation frame, so wait for it rather than racing it.
+  await page.waitForFunction(() => document.activeElement?.id === 'top');
 
   await context.close();
 });
@@ -132,6 +129,34 @@ test('the gate is a working pointer target, not just a click handler', async () 
   await page.mouse.move(startX, startY - 150, { steps: 10 });
   await page.mouse.up();
 
+  await page.waitForSelector('.engine-home.is-unlocked');
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
+  await context.close();
+});
+
+test('the whole screen is a swipe surface, not just the capsule', async () => {
+  // The previous implementation only let the mouse drag the capsule; a drag on
+  // the photograph did nothing. Now any upward drag anywhere on the gate enters.
+  const { context, page } = await open('/');
+  const image = await page.locator('.gate-image').boundingBox();
+  assert.ok(image, 'the gate image must be present');
+
+  const startX = image.x + image.width / 2;
+  const startY = image.y + image.height - 40;
+  await page.mouse.move(startX, startY);
+  await page.mouse.down();
+  await page.mouse.move(startX, startY - 160, { steps: 12 });
+  await page.mouse.up();
+
+  await page.waitForSelector('.engine-home.is-unlocked');
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
+  await context.close();
+});
+
+test('the mouse wheel drives the entrance on desktop', async () => {
+  const { context, page } = await open('/');
+  await page.mouse.move(640, 400);
+  await page.mouse.wheel(0, 300);
   await page.waitForSelector('.engine-home.is-unlocked');
   assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
   await context.close();

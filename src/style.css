@@ -81,6 +81,9 @@ button {
 }
 img {
   max-width: 100%;
+  /* 浏览器默认可把 <img> 拖出幽灵图，这会打断门禁上「任意位置向上滑动」的指针流。 */
+  -webkit-user-drag: none;
+  user-select: none;
 }
 .sr-only {
   position: absolute;
@@ -282,9 +285,12 @@ img {
   display: grid;
   grid-template-columns: 1.28fr 0.72fr;
   height: 100svh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  /* 整屏都是滑动面：touch-action: none 阻止浏览器把竖向手势拿去滚动/缩放，
+     让「任意位置向上滑动」能稳定触发。overflow 保持 hidden —— 内容在矮视口由
+     下方的紧凑降级规则保证放得下，门禁本身不需要滚动。 */
+  overflow: hidden;
   overscroll-behavior: contain;
+  touch-action: none;
   background: #111817;
   color: #fff;
   transition:
@@ -502,8 +508,9 @@ img {
   user-select: none;
 }
 
-/* 矮视口 / 横屏降级：并排布局 + 紧凑排版，保证解锁控件始终在视口内 */
-@media (max-height: 620px) and (orientation: landscape) {
+/* 矮视口降级：并排布局 + 紧凑排版，保证解锁控件始终在视口内。
+   不限定横屏 —— 矮的桌面窗口、分屏同样需要。 */
+@media (max-height: 620px) {
   .entry-gate {
     grid-template-columns: 1fr 1fr;
   }

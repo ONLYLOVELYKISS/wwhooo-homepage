@@ -13,7 +13,7 @@ const THRESHOLD = 0.8;
 /** Upward pointer travel, in px, that maps to a full swipe. */
 const TRAVEL = 130;
 /** Accumulated wheel delta, in px, that maps to a full swipe. */
-const WHEEL_TRAVEL = 320;
+const WHEEL_TRAVEL = 280;
 
 export function initGate() {
   const gate = document.querySelector('#entry-gate');
@@ -128,9 +128,9 @@ export function initGate() {
 
   for (const target of [capsule, gate]) {
     target.addEventListener('pointerdown', (event) => {
-      // Touch and pen may start the swipe anywhere on the gate; the mouse only
-      // drags the capsule so text selection elsewhere keeps working.
-      if (event.pointerType === 'mouse' && event.currentTarget === gate) return;
+      // The whole gate is one swipe surface: touch, pen and mouse may all start
+      // a swipe anywhere. Only a press that begins on the capsule defers to the
+      // capsule's own handler (same beginDrag, but the capsule also fires click).
       if (event.currentTarget === gate && event.target.closest?.('.swipe-capsule')) return;
       beginDrag(event);
     });
@@ -147,13 +147,14 @@ export function initGate() {
   });
 
   // ------------------------------------------------------------ wheel assist
+  // On the desktop the mouse wheel is the primary gesture: accumulate its delta
+  // into the same ratio the drags use, so scrolling down fills the capsule and
+  // enters. The gate never scrolls (overflow: hidden), so there is no ambiguity
+  // between "scroll the page" and "enter the engine".
   gate.addEventListener(
     'wheel',
     (event) => {
       if (entered) return;
-      // When the gate has to scroll (short or landscape viewports) the wheel
-      // belongs to the reader, not to the entrance gesture.
-      if (gate.scrollHeight > gate.clientHeight + 4) return;
       const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : 0;
       if (!delta) return;
       wheelAcc = Math.max(0, wheelAcc + delta);
