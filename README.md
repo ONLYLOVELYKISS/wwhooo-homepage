@@ -18,7 +18,7 @@ src/
   session.js                   本次会话是否已通过门禁
   style.css                    响应式视觉系统
 scripts/
-  build-routes.mjs             构建后为双语共 11 个路径生成真实 HTML 与 sitemap.xml
+  build-routes.mjs             构建后为双语共 12 个页面预渲染正文 + 生成 sitemap.xml
 test/
   views.test.mjs               渲染层测试（直接断言生成的 HTML）
   build.test.mjs               构建产物测试（体积预算、canonical、hreflang、路由文件）
@@ -149,14 +149,24 @@ rsync -a --delete --exclude='.git' ./ /opt/static-site/site/
 
 **`/toy/` 与 `/notes/` 是占位子站**，内容还薄，因此不进索引。补上真实内容后，把 `src/meta.js` 里对应的 `noindex: true` 去掉即可，sitemap 会在下次构建自动包含它们（两种语言一起）。
 
+**正文是构建时预渲染的，不依赖 JavaScript**。`src/views.js` 及其依赖（`i18n` / `context` / `meta` / `data` / `session`）刻意不含任何 DOM 与浏览器 API，所以 `scripts/build-routes.mjs` 可以直接调用**客户端同一套渲染函数**，把正文写进静态文件。结果是：双语共 12 个页面的 HTML 里都有完整正文，爬虫、禁用 JS 的访客、客户端二次渲染看到的都是同一份标记，不存在 hydration 不一致（客户端只是把同样的内容再渲染一次）。
+
+**禁用 JS 也不会有打不开的门禁**。门禁是覆盖层，没有脚本就点不开，所以静态 HTML 里 `<html>` 带 `class="no-js"`，`<head>` 的内联样式把它隐藏；一段内联握手脚本在首次绘制前移除 `no-js` 并给门禁后的内容加上 `inert`。这样：
+
+- **有 JS**：门禁从首帧就可见，内容在背后不可聚焦（`inert` 由脚本施加，不是写死在标记里）。
+- **无 JS**：门禁完全隐藏，访客直接读到并操作预渲染的完整首页。
+- 握手脚本还会读 `sessionStorage`，已进入过的访客在 `html` 上加 `entered`，避免刷新时先闪一下深色门禁。
+
+`inert` 刻意**不**写进静态标记 —— 否则禁用 JS 的访客会得到「能读、但不能交互」的内容，还被挡在打不开的门禁后面。
+
 **工具与项目分两层**。`projects` 是精选，渲染成 `/works/` 上的大标题条目；`archive` 是归档，渲染成排版克制的次级列表。`chaoxing-sign-cli` 属于后者 —— 自动化第三方平台的签到流程在合规上属于灰色地带，不适合作为首页门面，但作为记录保留。
 
 **图片**。主视觉母版 1.75 MB（4095×1713）。构建不处理图片，`public/images/` 下的派生图（800/1600/2400 的 WebP + 1600 的 JPEG 回退 + 700 的卡片图）由 `design/source/optimize_assets.py` 生成后会提交进仓库。替换图片时重跑该脚本。现在页面用 `<picture>` + `srcset`，浏览器只下载所需尺寸（实测首屏约 46 KB 而非 1.75 MB）。
 
 ## 尚未覆盖的部分
 
-- **静态 HTML 只有 head 与首屏占位，正文仍由 JS 渲染**。每个路由每个语言都有真实文件、正确的 `<title>`、canonical 与 hreflang，这是英文可索引的关键；但 `<body>` 里目前只有启动占位，正文要等模块执行。Google 会渲染 JS，所以内容能被索引，只是多一轮渲染。`src/views.js` 及其依赖（`i18n` / `context` / `meta` / `data`）**已经是无 DOM 依赖、可在 Node 里直接 import 的**，因此下一步可以在 `scripts/build-routes.mjs` 里直接调用它们把正文也写进静态文件 —— 唯一要处理的是首页门禁：静态版应渲染成「无门禁的完整首页」，让禁用 JS 的访客也能读到内容，而门禁交给 JS 叠加。
+- 客户端首次加载后会把同一份内容**再渲染一次**（`mount()` 无条件写 `innerHTML`）。当前页面很小，代价可忽略；若要更省，可以在 `mount()` 里比对预渲染标记与当前路由，一致时只做事件绑定而不重写 DOM。
 - 没有 lint / format / 类型检查（`main.js` 已拆分，但未引入 ESLint 与 Prettier）
-- 已提交的测试是**渲染输出的字符串断言**，没有真实 DOM。门禁手势、滚轮、焦点转移与语言切换是用仓库外的 `linkedom` 脚本人工验证的（见提交说明），没有进 CI
+- 已提交的测试是**渲染输出与产物的断言**，没有真实 DOM。门禁手势、滚轮、焦点转移、语言切换以及「禁用 JS 仍可用」是用仓库外的 `linkedom` 与无头浏览器截图人工验证的（见提交说明），未接入 CI
 - 英文文案是我按中文原文翻译的，你如果有更贴合的表达可以直接改 `src/i18n.js` 与 `src/data.js`
 - `design/source/optimize_assets.py` 需要本机有 Pillow，未接入 CI

@@ -134,10 +134,18 @@ test('the gate starts hidden for returning visitors', () => {
   enteredValue = null;
 });
 
-test('locked home content is inert rather than display:none', () => {
+test('the gated content is never inert in the static markup', () => {
+  // The inert state is applied by the handshake script in index.html (before
+  // first paint) and by gate.js on later renders. If it were baked into the
+  // markup, a visitor without JavaScript would get a readable homepage they are
+  // forbidden to interact with, behind a gate they cannot open.
   const locked = render('home');
-  assert.match(locked, /id="home-content" inert aria-hidden="true"/);
-  assert.match(locked, /把值得留下的/);
+  assert.match(locked, /<div class="home-content" id="home-content">/);
+  assert.doesNotMatch(locked, /id="home-content"[^>]*inert/);
+  assert.doesNotMatch(locked, /id="home-content"[^>]*aria-hidden/);
+  // The gate itself must still be there for scripted visitors.
+  assert.match(locked, /id="entry-gate"/);
+  assert.match(locked, /engine-home is-locked/);
 });
 
 test('images ship responsive sources with intrinsic dimensions', () => {

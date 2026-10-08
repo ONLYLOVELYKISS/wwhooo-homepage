@@ -73,13 +73,66 @@ test('each page declares its own language, canonical and title', async () => {
 test('the Chinese and English page for a route are genuinely different documents', async () => {
   const zh = await readRoute('/works/');
   const en = await readRoute('/en/works/');
-  const zhTitle = zh.match(/<title>([^<]*)<\/title>/)[1];
-  const enTitle = en.match(/<title>([^<]*)<\/title>/)[1];
-  assert.notEqual(zhTitle, enTitle);
-  assert.match(zhTitle, /作品与记录/);
+  const title = (html) => html.match(/<title>([^<]*)<\/title>/)[1];
+
+  assert.notEqual(title(zh), title(en));
+  assert.match(title(zh), /作品与记录/);
   // `&` is correctly escaped as &amp; in the emitted HTML.
-  assert.match(enTitle, /Works &amp; notes/);
-  assert.match(zh, /class="boot-zh"/);
+  assert.match(title(en), /Works &amp; notes/);
+
+  // Not just the head: the visible body differs too.
+  assert.match(zh, /做过，/);
+  assert.match(en, /Made,/);
+  assert.match(zh, /精选项目/);
+  assert.match(en, /Selected projects/);
+});
+
+test('every page ships a prerendered body, not a placeholder', async () => {
+  // The whole point of rendering the views at build time: content must not
+  // depend on JavaScript. Each route is checked for markup that only the body
+  // renderer can produce.
+  const expected = {
+    '/': [/id="entry-gate"/, /把值得留下的/],
+    '/en/': [/id="entry-gate"/, /Things worth/],
+    '/engine/': [/developer\.mozilla\.org/, /我会反复打开的/],
+    '/en/engine/': [/developer\.mozilla\.org/, /A few places I/],
+    '/profile/': [/mailto:wwhooo@icloud\.com/, /持续进行中/],
+    '/en/profile/': [/mailto:wwhooo@icloud\.com/, /in progress/],
+    '/works/': [/chaoxing-sign-cli/, /archive-list/, /夜间花卉/],
+    '/en/works/': [/chaoxing-sign-cli/, /archive-list/, /Night Bloom/],
+    '/toy/': [/WIP/, /TOY 实验场/],
+    '/en/notes/': [/WIP/, /Night Notes/],
+  };
+
+  for (const [routePath, patterns] of Object.entries(expected)) {
+    const html = await readRoute(routePath);
+    for (const pattern of patterns) {
+      assert.match(html, pattern, `${routePath} is missing prerendered content ${pattern}`);
+    }
+  }
+
+  for (const routePath of ALL_PATHS) {
+    const html = await readRoute(routePath);
+    // Only the markup must be gone; the placeholder's CSS stays in <head>
+    // because `vite dev` still serves it before the module bundle mounts.
+    assert.doesNotMatch(html, /class="boot-fallback"/, `${routePath} still ships the boot placeholder`);
+  }
+});
+
+test('no-JS visitors get a usable homepage instead of an unopenable gate', async () => {
+  for (const routePath of ALL_PATHS) {
+    const html = await readRoute(routePath);
+    assert.match(html, /<html lang="[^"]+" class="no-js"/, `${routePath} must start in the no-js state`);
+    assert.match(html, /classList\.remove\('no-js'\)/, `${routePath} is missing the handshake script`);
+  }
+
+  const home = await readRoute('/');
+  // The gate is hidden by a stylesheet rule when scripting is off, and the
+  // content behind it must therefore not be inert in the static markup —
+  // otherwise it is readable but unusable.
+  assert.match(home, /html\.no-js \.entry-gate,\s*\n\s*html\.entered \.entry-gate\{display:none!important\}/);
+  assert.match(home, /<div class="home-content" id="home-content">/);
+  assert.doesNotMatch(home, /id="home-content"[^>]*inert/);
 });
 
 test('every page advertises reciprocal hreflang alternates', async () => {

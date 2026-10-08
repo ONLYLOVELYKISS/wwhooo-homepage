@@ -51,6 +51,10 @@ export function initGate() {
     setInert(content, !entered);
     if (content) content.setAttribute('aria-hidden', String(!entered));
     document.body.classList.toggle('is-locked', !entered);
+    // Keeps the pre-paint stylesheet rule in index.html in sync: `entered`
+    // hides the gate so a reload never flashes it, and must be removed again
+    // when the visitor chooses to re-enter.
+    document.documentElement.classList.toggle('entered', entered);
   };
 
   const unlock = () => {

@@ -169,14 +169,18 @@ function statementBand() {
 export function home() {
   const entered = hasEntered();
   const lockState = entered ? 'is-unlocked' : 'is-locked';
-  // The gate is an overlay, not a replacement: the page content is always in
-  // the DOM so crawlers and no-JS visitors see the real homepage, while
-  // `inert` keeps it out of the tab order and the accessibility tree.
-  const contentAttrs = entered ? '' : ' inert aria-hidden="true"';
+  // The gate is an overlay, not a replacement, and the page content is emitted
+  // unconditionally — including into the prerendered static HTML.
+  //
+  // `inert` is deliberately NOT part of this markup: it is applied by the
+  // inline handshake in index.html (before first paint) and by gate.js on every
+  // subsequent render. If it lived here, a visitor without JavaScript would be
+  // left with a fully readable homepage that they are forbidden to interact
+  // with, behind a gate they cannot open.
   return page(
     `<div class="engine-home ${lockState}" id="engine-home">
       ${entryGate()}
-      <div class="home-content" id="home-content"${contentAttrs}>
+      <div class="home-content" id="home-content">
         ${landing()}
         ${librarySection()}
         ${indexSection()}
