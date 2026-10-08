@@ -10,7 +10,9 @@
     <link rel="alternate" hreflang="en" href="https://wwhooo.com/en/" />
     <link rel="alternate" hreflang="x-default" href="https://wwhooo.com/" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#e1e9e4" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#e1e9e4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101513" media="(prefers-color-scheme: dark)" />
 
     <meta property="og:title" content="Linn — 值得留下的东西" />
     <meta property="og:description" content="Linn 的个人主页：摄影、软件项目、个人档案与常用工具。" />
@@ -61,6 +63,10 @@
          build-routes.mjs rewrites <html lang> per language tree, so the two
          language variants below are picked with plain CSS rather than by
          rewriting this markup in every generated file. */
+      body {
+        margin: 0;
+        background: #e1e9e4;
+      }
       .boot-fallback {
         min-height: 100svh;
         padding: 12vh max(16px, 8vw);
@@ -109,6 +115,21 @@
       html:not([lang='en']) .boot-en {
         display: none;
       }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #101513;
+        }
+        .boot-fallback {
+          background: #101513;
+          color: #e7efe9;
+        }
+        .boot-fallback p {
+          color: #aab8b0;
+        }
+        .boot-fallback a {
+          color: #e9a08b;
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
         .boot-fallback * {
           animation: none !important;
@@ -126,8 +147,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-CaX7-oZV.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-Cjvk80uQ.css">
+    <script type="module" crossorigin src="/assets/index-CBToxUZH.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C6JXFOX7.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
