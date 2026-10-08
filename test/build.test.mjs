@@ -69,6 +69,28 @@ test('each page declares its own language, canonical and title', async () => {
   assert.equal(titles.size, ALL_PATHS.length, 'every route needs a distinct title');
 });
 
+test('every HTML entry advertises automatic light and dark themes', async () => {
+  for (const routePath of ALL_PATHS) {
+    const html = await readRoute(routePath);
+    assert.match(html, /<meta name="color-scheme" content="light dark"/i, `${routePath} color scheme`);
+    assert.match(html, /<meta name="theme-color" content="#e1e9e4" media="\(prefers-color-scheme: light\)"/i);
+    assert.match(html, /<meta name="theme-color" content="#101513" media="\(prefers-color-scheme: dark\)"/i);
+    assert.match(html, /@media\s*\(prefers-color-scheme:\s*dark\)/i, `${routePath} dark CSS`);
+  }
+
+  const notFound = await read('404.html');
+  assert.match(notFound, /<meta name="color-scheme" content="light dark"/i);
+  assert.match(notFound, /@media\s*\(prefers-color-scheme:\s*dark\)/i);
+});
+
+test('the manifest and boot fallback have dark-safe theme metadata', async () => {
+  const manifest = JSON.parse(await read('manifest.webmanifest'));
+  assert.equal(manifest.background_color, '#101513');
+  assert.equal(manifest.theme_color, '#101513');
+  const home = await read('index.html');
+  assert.match(home, /background:\s*#101513/);
+  assert.match(home, /color:\s*#e7efe9/);
+});
 test('the Chinese and English page for a route are genuinely different documents', async () => {
   const zh = await readRoute('/works/');
   const en = await readRoute('/en/works/');

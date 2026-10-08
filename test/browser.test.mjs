@@ -48,9 +48,11 @@ after(async () => {
  */
 async function open(
   path,
-  { viewport = { width: 1280, height: 800 }, javaScriptEnabled = true, hasTouch = false } = {},
+  { viewport = { width: 1280, height: 800 }, javaScriptEnabled = true, hasTouch = false, colorScheme } = {},
 ) {
-  const context = await browser.newContext({ viewport, javaScriptEnabled, hasTouch });
+  const contextOptions = { viewport, javaScriptEnabled, hasTouch };
+  if (colorScheme) contextOptions.colorScheme = colorScheme;
+  const context = await browser.newContext(contextOptions);
   const page = await context.newPage();
   const errors = [];
   page.on('console', (message) => {
@@ -99,6 +101,59 @@ test('the full-screen gate remains usable in short viewports', async () => {
     }
     await context.close();
   }
+});
+
+test('the page tracks light and dark system preference live', async () => {
+  const { context, page } = await open('/', { colorScheme: 'light' });
+  const snapshot = () =>
+    page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      const activeThemeColor = [...document.querySelectorAll('meta[name="theme-color"]')].find(
+        (meta) => matchMedia(meta.getAttribute('media')).matches,
+      );
+      return {
+        scheme: root.colorScheme,
+        paper: root.getPropertyValue('--paper').trim(),
+        body: getComputedStyle(document.body).backgroundColor,
+        themeColor: activeThemeColor?.content,
+      };
+    });
+
+  const light = await snapshot();
+  assert.equal(light.scheme, 'light');
+  assert.equal(light.paper, '#e1e9e4');
+  assert.equal(light.themeColor, '#e1e9e4');
+
+  await page.emulateMedia({ colorScheme: 'dark' });
+  const dark = await snapshot();
+  assert.equal(dark.scheme, 'dark');
+  assert.equal(dark.paper, '#101513');
+  assert.equal(dark.body, 'rgb(16, 21, 19)');
+  assert.equal(dark.themeColor, '#101513');
+  assert.notEqual(light.paper, dark.paper, 'the actual page palette must switch');
+
+  await page.emulateMedia({ colorScheme: 'light' });
+  assert.equal((await snapshot()).paper, light.paper, 'switching back to light must restore the light palette');
+  await context.close();
+});
+
+test('the dark palette is present in no-JS and standalone 404 experiences', async () => {
+  const fallback = await open('/', { javaScriptEnabled: false, colorScheme: 'dark' });
+  const fallbackColors = await fallback.page.evaluate(() => ({
+    background: getComputedStyle(document.body).backgroundColor,
+    color: getComputedStyle(document.querySelector('.boot-fallback') ?? document.body).color,
+  }));
+  assert.equal(fallbackColors.background, 'rgb(16, 21, 19)');
+  assert.equal(fallbackColors.color, 'rgb(231, 239, 233)');
+  await fallback.context.close();
+
+  const notFound = await open('/404.html', { colorScheme: 'dark' });
+  const colors = await notFound.page.evaluate(() => ({
+    paper: getComputedStyle(document.documentElement).getPropertyValue('--paper').trim(),
+    scheme: getComputedStyle(document.documentElement).colorScheme,
+  }));
+  assert.deepEqual(colors, { paper: '#101513', scheme: 'dark' });
+  await notFound.context.close();
 });
 
 // ---------------------------------------------------------------------------
@@ -294,29 +349,42 @@ test('without JavaScript the site shows its content and hides the gate', async (
 // Accessibility
 // ---------------------------------------------------------------------------
 
-test('no axe-core violations on any indexable page, in either language', async () => {
+test('no axe-core violations on public pages in both color schemes', async () => {
   const failures = [];
+  const paths = [
+    '/',
+    '/en/',
+    '/engine/',
+    '/en/engine/',
+    '/profile/',
+    '/en/profile/',
+    '/works/',
+    '/en/works/',
+    '/404.html',
+  ];
 
-  for (const path of ['/', '/en/', '/engine/', '/en/engine/', '/profile/', '/en/profile/', '/works/', '/en/works/']) {
-    const { context, page } = await open(path);
-    await page.addScriptTag({ path: axePath });
+  for (const colorScheme of ['light', 'dark']) {
+    for (const path of paths) {
+      const { context, page } = await open(path, { colorScheme });
+      await page.addScriptTag({ path: axePath });
 
-    const results = await page.evaluate(async () => {
-      const result = await window.axe.run(document, { resultTypes: ['violations'] });
-      return result.violations.map((violation) => ({
-        id: violation.id,
-        impact: violation.impact,
-        help: violation.help,
-        nodes: violation.nodes.slice(0, 4).map((node) => node.target.join(' ')),
-      }));
-    });
+      const results = await page.evaluate(async () => {
+        const result = await window.axe.run(document, { resultTypes: ['violations'] });
+        return result.violations.map((violation) => ({
+          id: violation.id,
+          impact: violation.impact,
+          help: violation.help,
+          nodes: violation.nodes.slice(0, 4).map((node) => node.target.join(' ')),
+        }));
+      });
 
-    for (const violation of results) {
-      failures.push(
-        `${path} — [${violation.impact}] ${violation.id}: ${violation.help} (${violation.nodes.join(' | ')})`,
-      );
+      for (const violation of results) {
+        failures.push(
+          `${colorScheme} ${path} — [${violation.impact}] ${violation.id}: ${violation.help} (${violation.nodes.join(' | ')})`,
+        );
+      }
+      await context.close();
     }
-    await context.close();
   }
 
   assert.deepEqual(failures, [], `axe reported:\n${failures.join('\n')}`);

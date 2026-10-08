@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, follow" />
-    <meta name="theme-color" content="#e1e9e4" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#e1e9e4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101513" media="(prefers-color-scheme: dark)" />
     <title>页面不存在 — Linn</title>
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,7 +23,7 @@
         --ink: #141c1b;
         --paper: #e1e9e4;
         --muted: #57655f;
-        --accent: #a34734;
+        --accent: #9a3f2d;
         --line: rgba(20, 28, 27, 0.22);
       }
       * {
@@ -42,6 +44,9 @@
           BlinkMacSystemFont,
           sans-serif;
         -webkit-font-smoothing: antialiased;
+      }
+      main {
+        display: block;
       }
       .kicker {
         display: inline-flex;
@@ -109,6 +114,20 @@
           monospace;
         letter-spacing: 0.08em;
       }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --ink: #e7efe9;
+          --paper: #101513;
+          --muted: #aab8b0;
+          --accent: #e9a08b;
+          --line: rgba(255, 255, 255, 0.22);
+        }
+        .kicker {
+          background: rgba(232, 161, 138, 0.12);
+          border-color: rgba(232, 161, 138, 0.28);
+        }
+      }
       @media (prefers-reduced-motion: reduce) {
         * {
           transition: none !important;
@@ -118,18 +137,20 @@
     </style>
   </head>
   <body>
-    <span class="kicker">404 / Not found</span>
-    <h1>这个地址<br /><i>没有内容。</i></h1>
-    <p>
-      也许链接已经改变，或者它从来没有存在过。<br />
-      The link may have changed, or it never existed at all.
-    </p>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/engine/">Engine</a>
-      <a href="/profile/">Profile</a>
-      <a href="/works/">Works</a>
-    </nav>
+    <main>
+      <span class="kicker">404 / Not found</span>
+      <h1>这个地址<br /><i>没有内容。</i></h1>
+      <p>
+        也许链接已经改变，或者它从来没有存在过。<br />
+        The link may have changed, or it never existed at all.
+      </p>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/engine/">Engine</a>
+        <a href="/profile/">Profile</a>
+        <a href="/works/">Works</a>
+      </nav>
+    </main>
     <footer>WW / LINN — wwhooo.com</footer>
   </body>
 </html>

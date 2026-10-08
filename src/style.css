@@ -8,6 +8,18 @@
   --ink: #141c1b;
   --ink-pure: #0d1312;
   --paper: #e1e9e4;
+  --surface-solid: #e1e9e4;
+  --surface-panel: rgba(255, 255, 255, 0.4);
+  --surface-chip: rgba(255, 255, 255, 0.6);
+  --surface-button: rgba(255, 255, 255, 0.5);
+  --surface-hover: rgba(255, 255, 255, 0.35);
+  --surface-border: rgba(255, 255, 255, 0.6);
+  --surface-panel-border: rgba(255, 255, 255, 0.7);
+  --library-surface: linear-gradient(180deg, rgba(235, 243, 238, 0.5), rgba(220, 233, 225, 0.35));
+  --index-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(205, 219, 210, 0.45));
+  --band-surface: linear-gradient(180deg, rgba(205, 219, 210, 0.25), transparent);
+  --lock-surface: rgba(247, 250, 248, 0.72);
+  --lock-border: rgba(20, 28, 27, 0.16);
   /* 正文与次要文字的对比度已按 WCAG AA（4.5:1，背景 #e1e9e4）校准：
      --muted 4.95:1，--muted-light 4.61:1。 */
   --muted: #57655f;
@@ -118,7 +130,7 @@ img {
   padding: 10px 18px;
   border-radius: 20px;
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   font: 500 11px var(--mono);
   letter-spacing: 0.08em;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -523,8 +535,8 @@ img {
   bottom: 26px;
   padding: 10px 16px;
   border-radius: 24px;
-  border: 1px solid rgba(20, 28, 27, 0.16);
-  background: rgba(247, 250, 248, 0.72);
+  border: 1px solid var(--lock-border);
+  background: var(--lock-surface);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: var(--muted);
@@ -535,11 +547,11 @@ img {
   transition: all 0.25s;
 }
 .lock-button:hover {
-  background: #fff;
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(20, 28, 27, 0.25);
+  border-color: var(--ink);
 }
 
 /* 首页 Hero 展区 (Landing) */
@@ -698,8 +710,8 @@ img {
 /* 个人库 (Atmos Gallery Rail) */
 .library-section {
   padding: clamp(90px, 10vw, 150px) clamp(24px, 4vw, 56px) clamp(100px, 12vw, 170px);
-  background: linear-gradient(180deg, rgba(235, 243, 238, 0.5), rgba(220, 233, 225, 0.35));
-  border-inline: 1px solid rgba(255, 255, 255, 0.5);
+  background: var(--library-surface);
+  border-inline: 1px solid var(--surface-border);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   margin-top: 40px;
   box-shadow: 0 -20px 50px rgba(20, 28, 27, 0.03);
@@ -717,8 +729,8 @@ img {
   gap: 6px;
   padding: 6px 14px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(20, 28, 27, 0.08);
+  background: var(--surface-chip);
+  border: 1px solid var(--line);
   color: var(--muted);
   font: 500 clamp(10px, 0.75vw, 11px) var(--mono);
   letter-spacing: 0.08em;
@@ -822,10 +834,10 @@ img {
   grid-template-columns: minmax(200px, 0.7fr) minmax(0, 1.3fr);
   gap: clamp(40px, 14%, 180px);
   padding: clamp(90px, 10vw, 150px) clamp(24px, 4vw, 56px) clamp(110px, 12vw, 180px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(205, 219, 210, 0.45));
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: var(--index-surface);
+  border: 1px solid var(--surface-border);
   border-radius: 0 0 var(--radius-md) var(--radius-md);
-  box-shadow: 0 30px 80px rgba(20, 28, 27, 0.06);
+  box-shadow: var(--shadow-lg);
 }
 .section-label {
   display: flex;
@@ -871,7 +883,7 @@ img {
 .tool-row:hover {
   padding-left: 16px;
   padding-right: 16px;
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--surface-hover);
   border-radius: var(--radius-sm);
   border-bottom-color: transparent;
 }
@@ -914,7 +926,7 @@ img {
   gap: 30px;
   padding: clamp(40px, 5vw, 64px) clamp(24px, 4vw, 56px) clamp(90px, 10vw, 120px);
   border-top: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(205, 219, 210, 0.25), transparent);
+  background: var(--band-surface);
 }
 .statement-band p {
   max-width: 680px;
@@ -926,7 +938,7 @@ img {
 .statement-band a {
   padding: 8px 18px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--surface-button);
   border: 1px solid var(--line-strong);
   font: 500 11.5px var(--mono);
   letter-spacing: 0.08em;
@@ -935,7 +947,7 @@ img {
 }
 .statement-band a:hover {
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   border-color: var(--ink);
   transform: translateY(-2px);
 }
@@ -980,10 +992,10 @@ img {
   padding-top: clamp(65px, 7vw, 95px);
 }
 .tool-groups section {
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--surface-panel);
   padding: 28px 24px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--surface-panel-border);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -1051,11 +1063,11 @@ img {
   color: var(--ink);
   padding: 4px 8px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--surface-panel);
 }
 .contact a:hover {
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
 }
 
 /* 作品页面 (Works) */
@@ -1117,7 +1129,7 @@ img {
 .archive-list a:hover {
   padding-left: 16px;
   padding-right: 16px;
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--surface-hover);
   border-radius: var(--radius-sm);
 }
 .archive-name {
@@ -1178,9 +1190,8 @@ img {
   justify-content: space-between;
   gap: 30px;
   padding: 22px 24px;
-  /* 必须不透明：figcaption 的父级 <figure> 是 #111817，半透明白会合成出 #a0a3a2，
-     axe 实测正文只有 2.4:1。 */
-  background: var(--paper);
+  /* 使用不透明主题表面，避免图注透明叠在照片上导致正文对比度不足。 */
+  background: var(--surface-solid);
   border-top: 1px solid var(--line);
   color: var(--muted);
   font: 500 11.5px var(--mono);
@@ -1287,12 +1298,12 @@ footer a {
   color: var(--ink);
   padding: 4px 10px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--surface-button);
   border: 1px solid var(--line);
 }
 footer a:hover {
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
 }
 
 /* 响应式断点 (Mobile & Tablet) */
@@ -1488,6 +1499,72 @@ footer a:hover {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     padding: 8px 14px;
     font-size: 9.5px;
+  }
+}
+
+/* 深色主题：保留 Hero、门禁与子站的深色视觉，把纸面内容区、控件与质感映射到
+   独立的深色 token；媒体查询跟随操作系统，不需要额外的手动切换状态。 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ink: #e7efe9;
+    --ink-pure: #f4faf5;
+    --paper: #101513;
+    --surface-solid: #19231f;
+    --surface-panel: rgba(255, 255, 255, 0.055);
+    --surface-chip: rgba(255, 255, 255, 0.065);
+    --surface-button: rgba(255, 255, 255, 0.07);
+    --surface-hover: rgba(255, 255, 255, 0.055);
+    --surface-border: rgba(255, 255, 255, 0.1);
+    --surface-panel-border: rgba(255, 255, 255, 0.14);
+    --library-surface: linear-gradient(180deg, #19231f, #141c19);
+    --index-surface: linear-gradient(135deg, #1c2924, #141d1a);
+    --band-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent);
+    --lock-surface: rgba(31, 42, 38, 0.92);
+    --lock-border: rgba(255, 255, 255, 0.18);
+    --muted: #aab8b0;
+    --muted-light: #b8c6bd;
+    --line: rgba(255, 255, 255, 0.14);
+    --line-strong: rgba(255, 255, 255, 0.24);
+    --accent: #e9a08b;
+    --accent-soft: #e8a18a;
+    --accent-glow: rgba(232, 161, 138, 0.38);
+    --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 16px 36px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.18);
+    --shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.34), 0 4px 14px rgba(0, 0, 0, 0.22);
+    --focus-ring: 0 0 0 3px rgba(232, 161, 138, 0.68);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+  body:before {
+    background:
+      radial-gradient(circle at 18% 12%, rgba(232, 161, 138, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 82% 88%, rgba(100, 145, 120, 0.08) 0%, transparent 55%),
+      repeating-linear-gradient(0deg, rgba(231, 239, 233, 0.012) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(90deg, rgba(231, 239, 233, 0.02) 0 1px, transparent 1px 7px);
+    opacity: 0.7;
+  }
+  .site-header {
+    background: rgba(7, 11, 10, 0.84);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .library-card {
+    background-color: #202a26;
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .library-card.notes {
+    background: #26332c;
+  }
+  .library-card.engine-card {
+    background: #222e29;
+  }
+  .library-card.sakura-card {
+    border-color: rgba(232, 161, 138, 0.5);
   }
 }
 
