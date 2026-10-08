@@ -103,9 +103,11 @@ test('no view depends on the jsDelivr CDN any more', () => {
   }
 });
 
-test('the entry gate is a real button, not a range input', () => {
+test('the entry gate is a full-screen accessible gesture surface', () => {
   const html = render('home');
-  assert.match(html, /<button[^>]+id="enter-button"/, 'gate must expose a focusable button');
+  assert.match(html, /<section[^>]+id="entry-gate"[^>]+tabindex="0"/, 'gate must be focusable');
+  assert.match(html, /<span class="gate-progress"/, 'gate must expose progress feedback');
+  assert.doesNotMatch(html, /id="enter-button"|class="swipe-capsule"/, 'visible swipe capsule must be removed');
   assert.doesNotMatch(html, /type="range"/, 'the keyboard-hostile range input must be gone');
   assert.doesNotMatch(html, /orient="vertical"/, 'orient is a Firefox-only attribute');
 });

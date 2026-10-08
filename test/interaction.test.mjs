@@ -181,8 +181,8 @@ test('the gate, the language switch and routing all work end to end', async (t) 
     assert.ok(q('a.language'), 'the language control must be a link');
   });
 
-  await t.test('one click on the gate button enters', async () => {
-    fire(q('#enter-button'), 'click');
+  await t.test('one click on the gate enters', async () => {
+    fire(q('#entry-gate'), 'click');
     await settle();
     assert.ok(q('#entry-gate').classList.contains('gate-complete'));
     assert.ok(q('#engine-home').classList.contains('is-unlocked'));
@@ -198,7 +198,7 @@ test('the gate, the language switch and routing all work end to end', async (t) 
     assert.ok(document.body.classList.contains('is-locked'));
     assert.equal(sessionStore.getItem('wwhooo-entered'), null);
     assert.equal(document.documentElement.classList.contains('entered'), false);
-    fire(q('#enter-button'), 'click');
+    fire(q('#entry-gate'), 'click');
     await settle();
     assert.ok(document.documentElement.classList.contains('entered'));
   });

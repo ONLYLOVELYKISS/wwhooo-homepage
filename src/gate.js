@@ -1,10 +1,10 @@
 // Sakura entry gate interaction.
 //
-// Replaces the previous `input[type=range]` hack. That control was keyboard
-// hostile (85 arrow presses to reach the unlock threshold), used the
-// Firefox-only `orient="vertical"` attribute, and had no visible focus ring.
-// Here the gate is a real <button>: click / Enter / Space enters in one step,
-// while pointer drag, touch swipe, and wheel remain as progressive enhancement.
+// There is no visible button any more: the whole screen is one gesture surface.
+// Swipe up anywhere (touch / pen / mouse drag), scroll the wheel on desktop,
+// click anywhere, or focus the gate and press Enter — any of them enters. The
+// gate stays keyboard-accessible because it is itself a focusable, labelled
+// element, not a dead region with a hidden button.
 
 import { clearEntered, hasEntered, markEntered } from './session.js';
 
@@ -17,11 +17,10 @@ const WHEEL_TRAVEL = 280;
 
 export function initGate() {
   const gate = document.querySelector('#entry-gate');
-  const capsule = document.querySelector('#enter-button');
   const home = document.querySelector('#engine-home');
   const content = document.querySelector('#home-content');
   const lockButton = document.querySelector('#lock-entry');
-  if (!gate || !capsule || !home) return;
+  if (!gate || !home) return;
 
   // Everything that sits behind the opaque overlay. The gate covers the page
   // visually, but without this the header, footer and skip link stay in the tab
@@ -42,7 +41,7 @@ export function initGate() {
   let suppressClickUntil = 0;
 
   const paint = () => {
-    capsule.style.setProperty('--swipe-ratio', String(ratio));
+    gate.style.setProperty('--swipe-ratio', String(ratio));
   };
 
   const applyLockedState = () => {
@@ -76,7 +75,7 @@ export function initGate() {
     markEntered();
     applyLockedState();
     // Hand focus to the revealed content: the gate is inert now, so leaving
-    // focus on the button would strand keyboard and screen reader users.
+    // focus on the former gate target would strand keyboard and screen reader users.
     requestAnimationFrame(() => {
       document.querySelector('#top')?.focus({ preventScroll: true });
     });
@@ -99,17 +98,16 @@ export function initGate() {
     clearEntered();
     reset();
     applyLockedState();
-    requestAnimationFrame(() => capsule.focus({ preventScroll: true }));
+    requestAnimationFrame(() => gate.focus({ preventScroll: true }));
   };
 
   // ------------------------------------------------------- pointer dragging
   const beginDrag = (event) => {
-    if (entered || pointerId !== null) return;
+    if (entered || pointerId !== null || event.target.closest?.('a')) return;
     pointerId = event.pointerId;
     startY = event.clientY;
     suppressClickUntil = 0;
     event.currentTarget.setPointerCapture?.(pointerId);
-    capsule.classList.add('is-dragging');
   };
 
   const moveDrag = (event) => {
@@ -121,36 +119,41 @@ export function initGate() {
   const endDrag = (event) => {
     if (pointerId === null || event.pointerId !== pointerId) return;
     pointerId = null;
-    capsule.classList.remove('is-dragging');
     event.currentTarget.releasePointerCapture?.(event.pointerId);
     if (ratio < THRESHOLD) reset();
   };
 
-  for (const target of [capsule, gate]) {
-    target.addEventListener('pointerdown', (event) => {
-      // The whole gate is one swipe surface: touch, pen and mouse may all start
-      // a swipe anywhere. Only a press that begins on the capsule defers to the
-      // capsule's own handler (same beginDrag, but the capsule also fires click).
-      if (event.currentTarget === gate && event.target.closest?.('.swipe-capsule')) return;
-      beginDrag(event);
-    });
-    target.addEventListener('pointermove', moveDrag);
-    target.addEventListener('pointerup', endDrag);
-    target.addEventListener('pointercancel', endDrag);
-  }
+  // The whole gate is one gesture surface: touch, pen and mouse may all start a
+  // swipe from any point.
+  gate.addEventListener('pointerdown', beginDrag);
+  gate.addEventListener('pointermove', moveDrag);
+  gate.addEventListener('pointerup', endDrag);
+  gate.addEventListener('pointercancel', endDrag);
 
-  // Click / Enter / Space: the accessible, one-step entrance. Suppressed right
-  // after a real drag so releasing a half-finished swipe does not also unlock.
-  capsule.addEventListener('click', () => {
+  // Click anywhere enters — the whole screen is the target, no capsule needed.
+  // Suppressed right after a real drag so releasing a half-finished swipe does
+  // not also unlock, and it defers to the language link when that is the target.
+  gate.addEventListener('click', (event) => {
     if (entered || Date.now() < suppressClickUntil) return;
+    if (event.target.closest?.('a')) return;
     unlock();
+  });
+
+  // Keyboard: focus the gate (the first stop in the locked tab order) and press
+  // Enter or Space. The guard keeps the language link's own Enter from entering.
+  gate.addEventListener('keydown', (event) => {
+    if (entered || event.target !== gate) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      unlock();
+    }
   });
 
   // ------------------------------------------------------------ wheel assist
   // On the desktop the mouse wheel is the primary gesture: accumulate its delta
-  // into the same ratio the drags use, so scrolling down fills the capsule and
-  // enters. The gate never scrolls (overflow: hidden), so there is no ambiguity
-  // between "scroll the page" and "enter the engine".
+  // into the same ratio the drags use, so scrolling down fills the progress bar
+  // and enters. The gate never scrolls (overflow: hidden), so there is no
+  // ambiguity between "scroll the page" and "enter the engine".
   gate.addEventListener(
     'wheel',
     (event) => {

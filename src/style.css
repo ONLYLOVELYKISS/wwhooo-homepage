@@ -98,7 +98,7 @@ img {
 }
 
 /* 统一可见焦点：此前全站没有任何 :focus-visible 样式，键盘用户看不到焦点位置。
-   只加 box-shadow、不覆盖 border-radius，圆角控件（语言按钮、胶囊）形状不受影响。 */
+   只加 box-shadow、不覆盖 border-radius，圆角语言入口与次级控件的形状不受影响。 */
 :focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
@@ -269,10 +269,8 @@ img {
 
 /* 门禁交互系统（Sakura Entry Gate）
  *
- * 之前这里用 position:fixed + min-height:560px（移动端 580px）+ overflow:hidden，
- * 在横屏或矮窗口下元素比视口高、自身又不能滚动，解锁控件落在视口之外，
- * 访客会被永久挡在门外。现在改为：高度交给视口、内部可滚动、矮视口降级为紧凑布局。
- */
+ * 门禁固定覆盖整个视口，矮视口切换紧凑布局；它本身不滚动，避免原生滚动抢走
+ * 整屏上滑手势。移动设备的双指缩放仍保留。 */
 .engine-home {
   position: relative;
   min-height: 100svh;
@@ -285,12 +283,13 @@ img {
   display: grid;
   grid-template-columns: 1.28fr 0.72fr;
   height: 100svh;
-  /* 整屏都是滑动面：touch-action: none 阻止浏览器把竖向手势拿去滚动/缩放，
-     让「任意位置向上滑动」能稳定触发。overflow 保持 hidden —— 内容在矮视口由
-     下方的紧凑降级规则保证放得下，门禁本身不需要滚动。 */
+  /* The gate captures vertical one-finger gestures. Keep `none` as a fallback
+     where pinch-zoom is unsupported; modern browsers may still zoom with two fingers. */
   overflow: hidden;
   overscroll-behavior: contain;
   touch-action: none;
+  touch-action: pinch-zoom;
+  cursor: pointer;
   background: #111817;
   color: #fff;
   transition:
@@ -302,6 +301,11 @@ img {
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
+}
+.entry-gate:focus-visible {
+  outline: 3px solid var(--accent-soft);
+  outline-offset: -8px;
+  box-shadow: none;
 }
 .gate-image {
   position: relative;
@@ -365,112 +369,46 @@ img {
   margin: 0;
 }
 
-/* Apple 质感向上手势胶囊
- * 由 <button> 承担：点击 / Enter / Space 一步进入（旧版 input[type=range] 需要按
- * 85 次方向键才够阈值，且用的 orient="vertical" 只有 Firefox 认）。
- * 进度反馈改为胶囊填充 —— 旧版用 transform:translateY 移动拇指，被 overflow:hidden
- * 裁掉，拖到 100% 的过程中基本看不到反馈。
- */
-.swipe-capsule {
-  position: relative;
-  width: min(280px, 100%);
-  height: 68px;
-  margin-top: 42px;
-  display: flex;
-  align-items: center;
-  padding: 6px 12px 6px 8px;
-  border-radius: 36px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
-  overflow: hidden;
-  touch-action: none;
-  transition:
-    border-color 0.3s,
-    background 0.3s,
-    box-shadow 0.3s;
+/* 进度反馈：底部一条细线随滑动/滚轮/点击前的拖动而填充。门禁本身就是一个
+   手势面，不再有胶囊按钮。 */
+.gate-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  z-index: 2;
 }
-.swipe-capsule:before {
+.gate-progress:after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(191, 89, 69, 0.62), rgba(228, 145, 125, 0.3));
-  transform: scaleX(var(--swipe-ratio, 0));
   transform-origin: left center;
+  transform: scaleX(var(--swipe-ratio, 0));
+  background: linear-gradient(90deg, var(--accent-soft), #e4917d);
   transition: transform 0.12s linear;
-  pointer-events: none;
-}
-.swipe-capsule:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-.swipe-capsule.is-dragging {
-  transition: none;
-}
-.swipe-capsule.is-dragging:before {
-  transition: none;
-}
-.swipe-thumb {
-  position: relative;
-  width: 54px;
-  height: 54px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #e4917d 0%, #bf5945 100%);
-  box-shadow:
-    0 4px 20px var(--accent-glow),
-    inset 0 1px 2px rgba(255, 255, 255, 0.4);
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 22px;
-  font-weight: 500;
-  animation: apple-pulse 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-.swipe-thumb .chevron {
-  display: block;
-  animation: arrow-bounce 1.6s ease-in-out infinite;
-}
-.swipe-text {
-  position: relative;
-  margin-left: 16px;
-  color: rgba(255, 255, 255, 0.92);
-  font: 500 11.5px var(--mono);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  pointer-events: none;
 }
 
-@keyframes apple-pulse {
-  0%,
-  100% {
-    box-shadow: 0 4px 18px rgba(191, 89, 69, 0.45);
-  }
-  50% {
-    box-shadow: 0 4px 34px rgba(228, 145, 125, 0.85);
-  }
+/* 方向提示：一个轻微上下弹跳的箭头 */
+.hint-chevron {
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--accent-soft);
+  animation: hint-bounce 1.6s ease-in-out infinite;
 }
-@keyframes arrow-bounce {
+@keyframes hint-bounce {
   0%,
   100% {
     transform: translateY(0);
+    opacity: 0.7;
   }
   50% {
     transform: translateY(-5px);
+    opacity: 1;
   }
 }
-
 .gate-foot {
   margin-top: 38px;
   color: rgba(255, 255, 255, 0.62);
@@ -526,19 +464,12 @@ img {
     margin-top: 12px;
   }
   .gate-hint {
-    display: none;
+    display: block;
+    font-size: 12px;
+    line-height: 1.55;
   }
   .gate-foot {
     display: none;
-  }
-  .swipe-capsule {
-    margin-top: 18px;
-    height: 58px;
-  }
-  .swipe-thumb {
-    width: 46px;
-    height: 46px;
-    font-size: 18px;
   }
   .gate-mark {
     font-size: 30vw;
@@ -1391,7 +1322,7 @@ footer a:hover {
     padding: 3px 8px;
   }
 
-  /* 门禁在移动端改为上下堆叠，并允许内部滚动 */
+  /* 门禁在移动端改为上下堆叠；整个视口仍由门禁统一接收手势。 */
   .entry-gate {
     display: block;
   }
@@ -1412,20 +1343,6 @@ footer a:hover {
   .gate-copy h1 {
     margin: 14px 0 16px;
     font-size: clamp(3rem, 14vw, 6.2rem);
-  }
-  .swipe-capsule {
-    margin-top: 22px;
-    width: 100%;
-    max-width: 250px;
-    height: 60px;
-  }
-  .swipe-thumb {
-    width: 48px;
-    height: 48px;
-    font-size: 18px;
-  }
-  .swipe-text {
-    font-size: 10.5px;
   }
   .gate-foot {
     margin-top: 22px;
@@ -1597,7 +1514,7 @@ footer a:hover {
   .engine-home.is-unlocked .home-content {
     animation: none;
   }
-  .swipe-capsule:before {
+  .gate-progress:after {
     transition: none;
   }
 }

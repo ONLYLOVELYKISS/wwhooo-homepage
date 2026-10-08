@@ -46,8 +46,11 @@ after(async () => {
  * `javaScriptEnabled: false` is the faithful way to test the no-script path —
  * unlike blocking the bundle, it also stops the inline handshake from running.
  */
-async function open(path, { viewport = { width: 1280, height: 800 }, javaScriptEnabled = true } = {}) {
-  const context = await browser.newContext({ viewport, javaScriptEnabled });
+async function open(
+  path,
+  { viewport = { width: 1280, height: 800 }, javaScriptEnabled = true, hasTouch = false } = {},
+) {
+  const context = await browser.newContext({ viewport, javaScriptEnabled, hasTouch });
   const page = await context.newPage();
   const errors = [];
   page.on('console', (message) => {
@@ -62,28 +65,38 @@ async function open(path, { viewport = { width: 1280, height: 800 }, javaScriptE
 // Viewport: the regression that motivated all of this
 // ---------------------------------------------------------------------------
 
-test('the unlock control stays inside a landscape phone viewport', async () => {
+test('the full-screen gate remains usable in short viewports', async () => {
   // 844x390 is a typical phone in landscape, and 844x330 a short laptop window.
-  // Both used to strand the visitor: the gate was pinned taller than the screen
-  // by `min-height: 580px` and clipped by `overflow: hidden`, so the button was
-  // painted below the fold with no scrolling available.
   for (const viewport of [
     { width: 844, height: 390 },
     { width: 844, height: 330 },
+    { width: 390, height: 844 },
+    { width: 375, height: 667 },
+    { width: 320, height: 568 },
     { width: 1280, height: 800 },
   ]) {
     const { context, page } = await open('/', { viewport });
-    const button = page.locator('#enter-button');
-    assert.ok(await button.isVisible(), `unlock control hidden at ${viewport.width}x${viewport.height}`);
-
-    const box = await button.boundingBox();
-    assert.ok(box, `no bounding box at ${viewport.width}x${viewport.height}`);
-    assert.ok(box.y >= 0, `unlock control starts above the viewport (y=${box.y})`);
+    const gate = page.locator('#entry-gate');
+    assert.ok(await gate.isVisible(), `gate hidden at ${viewport.width}x${viewport.height}`);
+    assert.equal(await gate.getAttribute('tabindex'), '0');
+    const box = await gate.boundingBox();
+    assert.ok(box, `no gate bounding box at ${viewport.width}x${viewport.height}`);
+    assert.equal(Math.round(box.x), 0);
+    assert.equal(Math.round(box.y), 0);
+    assert.equal(Math.round(box.width), viewport.width);
+    assert.equal(Math.round(box.height), viewport.height);
+    const progress = await page.locator('.gate-progress').boundingBox();
+    assert.ok(progress, 'progress indicator must be present');
+    assert.ok(progress.y + progress.height <= viewport.height, 'progress indicator is clipped');
+    const languageLink = await page.locator('.gate-alt a').boundingBox();
+    assert.ok(languageLink, 'gate language link must be present');
     assert.ok(
-      box.y + box.height <= viewport.height,
-      `unlock control ends at ${Math.round(box.y + box.height)}px, past the ${viewport.height}px viewport`,
+      languageLink.y + languageLink.height <= viewport.height,
+      `gate language link is clipped at ${viewport.width}x${viewport.height}`,
     );
-    assert.ok(box.x >= 0 && box.x + box.width <= viewport.width, 'unlock control is horizontally clipped');
+    if (viewport.width < 768) {
+      assert.equal(await gate.evaluate((el) => getComputedStyle(el).touchAction), 'pinch-zoom');
+    }
     await context.close();
   }
 });
@@ -92,38 +105,45 @@ test('the unlock control stays inside a landscape phone viewport', async () => {
 // The gate itself
 // ---------------------------------------------------------------------------
 
-test('a click enters, and a keyboard user can enter too', async () => {
+test('clicking anywhere on the gate enters', async () => {
   const { context, page } = await open('/');
-
   assert.ok(await page.locator('#home-content').evaluate((el) => el.hasAttribute('inert')), 'content starts inert');
+  assert.equal(await page.locator('#enter-button').count(), 0, 'the visible capsule must be removed');
 
-  // Keyboard first: the control is a real <button>, so Enter must work without
-  // any pointer gesture. The previous implementation was an
-  // `input[type=range]` needing ~85 arrow presses.
-  await page.locator('#enter-button').focus();
-  await page.keyboard.press('Enter');
+  await page.locator('.gate-image').click();
   await page.waitForSelector('.engine-home.is-unlocked');
-  assert.equal(await page.locator('#gate-hidden-check').count(), 0);
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
   assert.ok(await page.locator('#home-content').evaluate((el) => !el.hasAttribute('inert')));
   assert.equal(await page.evaluate(() => document.body.classList.contains('is-locked')), false);
-  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
-
-  // Focus must land somewhere meaningful: the gate is inert now, so leaving it
-  // on the button would strand keyboard users. The focus move happens on the
-  // next animation frame, so wait for it rather than racing it.
-  await page.waitForFunction(() => document.activeElement?.id === 'top');
-
   await context.close();
 });
 
-test('the gate is a working pointer target, not just a click handler', async () => {
+test('the focused gate enters with Enter or Space', async () => {
   const { context, page } = await open('/');
-  const box = await page.locator('#enter-button').boundingBox();
 
-  // Drag the capsule upwards — the gesture the design is built around. The
-  // router needs 0.8 x 130px ≈ 104px of travel, so 150px with margin.
+  const gate = page.locator('#entry-gate');
+  await gate.focus();
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('.engine-home.is-unlocked');
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
+  // The gate is inert now, so focus must move into the revealed content.
+  await page.waitForFunction(() => document.activeElement?.id === 'top');
+  await context.close();
+
+  const second = await open('/');
+  await second.page.locator('#entry-gate').focus();
+  await second.page.keyboard.press('Space');
+  await second.page.waitForSelector('.engine-home.is-unlocked');
+  await second.context.close();
+});
+
+test('the gate copy remains a working mouse-drag target', async () => {
+  const { context, page } = await open('/');
+  const box = await page.locator('.gate-copy').boundingBox();
+  assert.ok(box, 'the gate copy must be present');
+
   const startX = box.x + box.width / 2;
-  const startY = box.y + box.height / 2;
+  const startY = box.y + box.height * 0.82;
   await page.mouse.move(startX, startY);
   await page.mouse.down();
   await page.mouse.move(startX, startY - 150, { steps: 10 });
@@ -134,9 +154,36 @@ test('the gate is a working pointer target, not just a click handler', async () 
   await context.close();
 });
 
-test('the whole screen is a swipe surface, not just the capsule', async () => {
-  // The previous implementation only let the mouse drag the capsule; a drag on
-  // the photograph did nothing. Now any upward drag anywhere on the gate enters.
+test('a touch swipe anywhere on a mobile gate enters', async () => {
+  const { context, page } = await open('/', {
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+  });
+  const image = await page.locator('.gate-image').boundingBox();
+  assert.ok(image, 'the gate image must be present');
+  const startX = image.x + image.width / 2;
+  const startY = image.y + image.height - 24;
+  const cdp = await context.newCDPSession(page);
+
+  await cdp.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x: startX, y: startY, id: 1 }],
+  });
+  for (let step = 1; step <= 10; step += 1) {
+    await cdp.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x: startX, y: startY - (160 * step) / 10, id: 1 }],
+    });
+  }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+
+  await page.waitForSelector('.engine-home.is-unlocked');
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
+  await context.close();
+});
+
+test('the whole screen is a swipe surface, not just the photograph', async () => {
+  // A mouse drag on the photograph tests the full-bleed pointer target, not just copy.
   const { context, page } = await open('/');
   const image = await page.locator('.gate-image').boundingBox();
   assert.ok(image, 'the gate image must be present');
@@ -150,6 +197,15 @@ test('the whole screen is a swipe surface, not just the capsule', async () => {
 
   await page.waitForSelector('.engine-home.is-unlocked');
   assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), '1');
+  await context.close();
+});
+
+test('the gate language link navigates without entering', async () => {
+  const { context, page } = await open('/');
+  await page.locator('.gate-alt a').click();
+  await page.waitForURL('**/en/');
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('wwhooo-entered')), null);
+  assert.ok(await page.locator('#engine-home').evaluate((el) => el.classList.contains('is-locked')));
   await context.close();
 });
 

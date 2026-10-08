@@ -72,7 +72,11 @@ function entryGate() {
   // Render the completed state up front for returning visitors: adding the
   // class after paint would replay the slide-up animation on every load.
   const done = hasEntered() ? ' gate-complete' : '';
-  return `<section class="entry-gate${done}" id="entry-gate" aria-label="${t().unlock}">
+  // The gate is one big gesture surface with no capsule button: swipe anywhere,
+  // scroll the wheel, click, or focus it and press Enter. It is focusable and
+  // labelled so the keyboard path stays a single action.
+  return `<section class="entry-gate${done}" id="entry-gate" role="region" tabindex="0" aria-label="${t().unlock}" aria-describedby="gate-instruction">
+      <span class="sr-only" id="gate-instruction">${t().unlockHint} ${t().gateKeyboardHint}</span>
       <div class="gate-image">
         ${photoPicture({ sizes: '(max-width: 768px) 100vw, 60vw', priority: true })}
         <div class="gate-vignette"></div>
@@ -81,14 +85,11 @@ function entryGate() {
         <span class="kicker">WW / SAKURA ENTRY</span>
         <p class="gate-status">${t().unlocked}</p>
         <h1>${t().gateTitle}</h1>
-        <p class="gate-hint">${t().unlockHint}</p>
-        <button class="swipe-capsule" id="enter-button" type="button">
-          <span class="swipe-thumb" aria-hidden="true"><span class="chevron">↑</span></span>
-          <span class="swipe-text">${t().unlock}</span>
-        </button>
+        <p class="gate-hint"><span class="hint-chevron" aria-hidden="true">↑</span>${t().unlockHint}</p>
         <p class="gate-foot">${t().gateFoot}</p>
         <p class="gate-alt"><a href="${pathFor(getRouteId() ?? 'home', otherLang(getLang()))}" hreflang="${HTML_LANG[otherLang(getLang())]}" lang="${HTML_LANG[otherLang(getLang())]}">${t().otherLanguageName}</a></p>
       </div>
+      <span class="gate-progress" aria-hidden="true"></span>
       <b class="gate-mark" aria-hidden="true">桜</b>
     </section>`;
 }
