@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -55,45 +55,67 @@
       html[lang='en'] .boot-zh{display:none}
       html:not([lang='en']) .boot-en{display:none}
       @media (prefers-reduced-motion:reduce){.boot-fallback *{animation:none!important;transition:none!important}}
+      /* Without scripting the overlay would be unopenable, so hide it and let
+         visitors read the prerendered homepage. `entered` is set by the inline
+         handshake below for returning visitors, so a reload does not flash the
+         dark gate before the module bundle takes over. Inline (rather than in
+         src/style.css) so both rules are guaranteed to be in effect at first
+         paint even if the stylesheet is slow or fails. */
+      html.no-js .entry-gate,
+      html.entered .entry-gate{display:none!important}
     </style>
-    <noscript>
-      <style>
-        .boot-loading{display:none}
-        .boot-noscript{display:block}
-      </style>
-    </noscript>
-    <script type="module" crossorigin src="/assets/index-Bh4_5oHQ.js"></script>
+    <script type="module" crossorigin src="/assets/index-qH68yiDU.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-RHnz3GF5.css">
   </head>
   <body>
     <div id="app">
-      <div class="boot-fallback">
-        <span>WW / LINN</span>
-        <h1>Things<br /><i>worth</i><br />keeping.</h1>
-        <p class="boot-loading">
-          <span class="boot-zh">个人主页正在加载。</span>
-          <span class="boot-en">Personal homepage loading.</span>
-        </p>
-        <p class="boot-noscript">
-          <span class="boot-zh">这个站点需要 JavaScript 才能浏览完整内容，下面的链接仍然可用。</span>
-          <span class="boot-en">This site needs JavaScript to render its full content. The links below still work.</span>
-        </p>
-        <nav>
-          <span class="lang-group boot-zh">
-            <a href="/engine/">ENGINE</a>
-            <a href="/profile/">PROFILE</a>
-            <a href="/works/">WORKS</a>
-            <a href="/en/">EN</a>
-          </span>
-          <span class="lang-group boot-en">
-            <a href="/en/engine/">ENGINE</a>
-            <a href="/en/profile/">PROFILE</a>
-            <a href="/en/works/">WORKS</a>
-            <a href="/" hreflang="zh-CN" lang="zh-CN">中文</a>
-          </span>
-          <a href="https://github.com/ONLYLOVELYKISS">GITHUB</a>
-        </nav>
+<a class="skip-link" href="#top">跳到主要内容</a><header class="site-header">
+      <a class="brand" href="/" aria-label="Linn — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
+      <nav aria-label="主导航"><a href="/">首页</a><a href="/engine/">工具</a><a href="/profile/">档案</a><a href="/works/">作品</a></nav>
+      <a class="language" href="/en/toy/" hreflang="en" lang="en" aria-label="切换到英文">EN</a>
+    </header><main id="top" tabindex="-1"><section class="subsite-page lab">
+      <a class="back-link" href="/">← 返回主站</a>
+      <span class="kicker">SUBSITE / TOY LAB</span>
+      <h1>TOY 实验场</h1>
+      <p>阶段性实验、脚本和可以运行的小想法。</p>
+      <div class="subsite-placeholder">
+        <span>WIP / 2026</span>
+        <strong>这是一个可访问的子站初稿。</strong>
+        <a href="/engine/">工具箱 ↗</a>
       </div>
+    </section></main><footer>
+      <span>© 2026 LINN</span>
+      <span>WW / PERSONAL ENGINE</span>
+      <a href="#top">回到顶部 ↑</a>
+    </footer>
     </div>
+    <script>
+      // Progressive-enhancement handshake, run before first paint.
+      //
+      // scripts/build-routes.mjs replaces the placeholder above with the real
+      // prerendered page, so a visitor without JavaScript still gets the full
+      // homepage — but the entry gate would be an unopenable overlay, hence
+      // `.no-js` hides it via the stylesheet in <head>.
+      //
+      // `inert` on the gated content is applied here rather than baked into the
+      // static markup, for the same reason: no-JS visitors must not be locked
+      // out of content they can actually read.
+      (function () {
+        var root = document.documentElement;
+        var entered = false;
+        try {
+          entered = sessionStorage.getItem('wwhooo-entered') === '1';
+        } catch (e) {
+          /* private mode */
+        }
+        root.classList.remove('no-js');
+        if (entered) root.classList.add('entered');
+        var content = document.getElementById('home-content');
+        if (content && !entered) {
+          content.setAttribute('inert', '');
+          content.setAttribute('aria-hidden', 'true');
+        }
+      })();
+    </script>
   </body>
 </html>

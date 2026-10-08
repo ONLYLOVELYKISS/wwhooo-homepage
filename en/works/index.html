@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -55,45 +55,110 @@
       html[lang='en'] .boot-zh{display:none}
       html:not([lang='en']) .boot-en{display:none}
       @media (prefers-reduced-motion:reduce){.boot-fallback *{animation:none!important;transition:none!important}}
+      /* Without scripting the overlay would be unopenable, so hide it and let
+         visitors read the prerendered homepage. `entered` is set by the inline
+         handshake below for returning visitors, so a reload does not flash the
+         dark gate before the module bundle takes over. Inline (rather than in
+         src/style.css) so both rules are guaranteed to be in effect at first
+         paint even if the stylesheet is slow or fails. */
+      html.no-js .entry-gate,
+      html.entered .entry-gate{display:none!important}
     </style>
-    <noscript>
-      <style>
-        .boot-loading{display:none}
-        .boot-noscript{display:block}
-      </style>
-    </noscript>
-    <script type="module" crossorigin src="/assets/index-Bh4_5oHQ.js"></script>
+    <script type="module" crossorigin src="/assets/index-qH68yiDU.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-RHnz3GF5.css">
   </head>
   <body>
     <div id="app">
-      <div class="boot-fallback">
-        <span>WW / LINN</span>
-        <h1>Things<br /><i>worth</i><br />keeping.</h1>
-        <p class="boot-loading">
-          <span class="boot-zh">个人主页正在加载。</span>
-          <span class="boot-en">Personal homepage loading.</span>
-        </p>
-        <p class="boot-noscript">
-          <span class="boot-zh">这个站点需要 JavaScript 才能浏览完整内容，下面的链接仍然可用。</span>
-          <span class="boot-en">This site needs JavaScript to render its full content. The links below still work.</span>
-        </p>
-        <nav>
-          <span class="lang-group boot-zh">
-            <a href="/engine/">ENGINE</a>
-            <a href="/profile/">PROFILE</a>
-            <a href="/works/">WORKS</a>
-            <a href="/en/">EN</a>
-          </span>
-          <span class="lang-group boot-en">
-            <a href="/en/engine/">ENGINE</a>
-            <a href="/en/profile/">PROFILE</a>
-            <a href="/en/works/">WORKS</a>
-            <a href="/" hreflang="zh-CN" lang="zh-CN">中文</a>
-          </span>
-          <a href="https://github.com/ONLYLOVELYKISS">GITHUB</a>
-        </nav>
+<a class="skip-link" href="#top">Skip to main content</a><header class="site-header">
+      <a class="brand" href="/en/" aria-label="Linn — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
+      <nav aria-label="Main navigation"><a href="/en/">Home</a><a href="/en/engine/">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/" aria-current="page">Works</a></nav>
+      <a class="language" href="/works/" hreflang="zh-CN" lang="zh-CN" aria-label="Switch to Chinese">中</a>
+    </header><main id="top" tabindex="-1"><section class="inner-page">
+      <div class="page-intro">
+        <span class="kicker">04 / WORKS</span>
+        <h1>Made,<br><i>observed.</i></h1>
+        <p>Software projects and photographs. How I work, and how I look at the world.</p>
       </div>
+      <section class="works-list">
+        <div class="section-label"><span>01</span><h2>Selected projects</h2></div>
+        <div><a class="project-row" href="https://github.com/ONLYLOVELYKISS/wwhooo-homepage" target="_blank" rel="noopener noreferrer">
+            <span>01</span>
+            <div>
+              <small>PERSONAL HOMEPAGE / 2026</small>
+              <h2>wwhooo.com</h2>
+              <p>A personal space organized around photography, projects, and profile.</p>
+            </div>
+            <b aria-hidden="true">↗</b>
+          </a><a class="project-row" href="https://github.com/ONLYLOVELYKISS/TOY" target="_blank" rel="noopener noreferrer">
+            <span>02</span>
+            <div>
+              <small>PYTHON / AI + INTERNET / 2025—</small>
+              <h2>TOY</h2>
+              <p>A growing lab for turning curiosity into small, runnable tools.</p>
+            </div>
+            <b aria-hidden="true">↗</b>
+          </a></div>
+      </section>
+      <section class="archive-section">
+        <div class="section-label">
+          <span>02</span>
+          <h2>Archive</h2>
+          <p>Earlier experiments and tools, kept for the record.</p>
+        </div>
+        <ul class="archive-list"><li>
+            <a href="https://github.com/ONLYLOVELYKISS/chaoxing-sign-cli" target="_blank" rel="noopener noreferrer">
+              <div>
+                <span class="archive-name">chaoxing-sign-cli</span>
+                <small>TYPESCRIPT / AUTOMATION / ARCHIVE</small>
+                <p>An automation tool exploring monitoring, sign-ins, and notifications.</p>
+              </div>
+              <b aria-hidden="true">↗</b>
+            </a>
+          </li></ul>
+      </section>
+      <section class="photo-section">
+        <div class="section-label"><span>03</span><h2>A photograph</h2></div>
+        <figure>
+          <picture>
+        <source type="image/webp" srcset="/images/sakura-800.webp 800w, /images/sakura-1600.webp 1600w, /images/sakura-2400.webp 2400w" sizes="(max-width: 768px) 100vw, 70vw">
+        <img src="/images/sakura-1600.jpg" width="2400" height="1004" alt="A close-up of sakura blossoms against a dark night" loading="lazy" decoding="async">
+      </picture>
+          <figcaption><strong>Sakura / Night Bloom</strong><span>Keeping a little warmth in the dark.</span></figcaption>
+        </figure>
+      </section>
+    </section></main><footer>
+      <span>© 2026 LINN</span>
+      <span>WW / PERSONAL ENGINE</span>
+      <a href="#top">Back to top ↑</a>
+    </footer>
     </div>
+    <script>
+      // Progressive-enhancement handshake, run before first paint.
+      //
+      // scripts/build-routes.mjs replaces the placeholder above with the real
+      // prerendered page, so a visitor without JavaScript still gets the full
+      // homepage — but the entry gate would be an unopenable overlay, hence
+      // `.no-js` hides it via the stylesheet in <head>.
+      //
+      // `inert` on the gated content is applied here rather than baked into the
+      // static markup, for the same reason: no-JS visitors must not be locked
+      // out of content they can actually read.
+      (function () {
+        var root = document.documentElement;
+        var entered = false;
+        try {
+          entered = sessionStorage.getItem('wwhooo-entered') === '1';
+        } catch (e) {
+          /* private mode */
+        }
+        root.classList.remove('no-js');
+        if (entered) root.classList.add('entered');
+        var content = document.getElementById('home-content');
+        if (content && !entered) {
+          content.setAttribute('inert', '');
+          content.setAttribute('aria-hidden', 'true');
+        }
+      })();
+    </script>
   </body>
 </html>

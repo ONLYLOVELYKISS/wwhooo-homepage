@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -55,45 +55,109 @@
       html[lang='en'] .boot-zh{display:none}
       html:not([lang='en']) .boot-en{display:none}
       @media (prefers-reduced-motion:reduce){.boot-fallback *{animation:none!important;transition:none!important}}
+      /* Without scripting the overlay would be unopenable, so hide it and let
+         visitors read the prerendered homepage. `entered` is set by the inline
+         handshake below for returning visitors, so a reload does not flash the
+         dark gate before the module bundle takes over. Inline (rather than in
+         src/style.css) so both rules are guaranteed to be in effect at first
+         paint even if the stylesheet is slow or fails. */
+      html.no-js .entry-gate,
+      html.entered .entry-gate{display:none!important}
     </style>
-    <noscript>
-      <style>
-        .boot-loading{display:none}
-        .boot-noscript{display:block}
-      </style>
-    </noscript>
-    <script type="module" crossorigin src="/assets/index-Bh4_5oHQ.js"></script>
+    <script type="module" crossorigin src="/assets/index-qH68yiDU.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-RHnz3GF5.css">
   </head>
   <body>
     <div id="app">
-      <div class="boot-fallback">
-        <span>WW / LINN</span>
-        <h1>Things<br /><i>worth</i><br />keeping.</h1>
-        <p class="boot-loading">
-          <span class="boot-zh">个人主页正在加载。</span>
-          <span class="boot-en">Personal homepage loading.</span>
-        </p>
-        <p class="boot-noscript">
-          <span class="boot-zh">这个站点需要 JavaScript 才能浏览完整内容，下面的链接仍然可用。</span>
-          <span class="boot-en">This site needs JavaScript to render its full content. The links below still work.</span>
-        </p>
-        <nav>
-          <span class="lang-group boot-zh">
-            <a href="/engine/">ENGINE</a>
-            <a href="/profile/">PROFILE</a>
-            <a href="/works/">WORKS</a>
-            <a href="/en/">EN</a>
-          </span>
-          <span class="lang-group boot-en">
-            <a href="/en/engine/">ENGINE</a>
-            <a href="/en/profile/">PROFILE</a>
-            <a href="/en/works/">WORKS</a>
-            <a href="/" hreflang="zh-CN" lang="zh-CN">中文</a>
-          </span>
-          <a href="https://github.com/ONLYLOVELYKISS">GITHUB</a>
-        </nav>
+<a class="skip-link" href="#top">Skip to main content</a><header class="site-header">
+      <a class="brand" href="/en/" aria-label="Linn — home"><span aria-hidden="true">WW</span><b>LINN</b></a>
+      <nav aria-label="Main navigation"><a href="/en/">Home</a><a href="/en/engine/" aria-current="page">Tools</a><a href="/en/profile/">Profile</a><a href="/en/works/">Works</a></nav>
+      <a class="language" href="/engine/" hreflang="zh-CN" lang="zh-CN" aria-label="Switch to Chinese">中</a>
+    </header><main id="top" tabindex="-1"><section class="inner-page">
+      <div class="page-intro">
+        <span class="kicker">02 / ENGINE</span>
+        <h1>A few places I<br><i>return to.</i></h1>
+        <p>Simple, useful, and close at hand.</p>
       </div>
+      <div class="tool-groups"><section>
+          <h2>Search</h2>
+          <a class="tool-row" href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+              <strong>Google</strong>
+              <span>General search</span>
+              <b aria-hidden="true">↗</b>
+            </a><a class="tool-row" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer">
+              <strong>Bing</strong>
+              <span>Search and images</span>
+              <b aria-hidden="true">↗</b>
+            </a><a class="tool-row" href="https://github.com/" target="_blank" rel="noopener noreferrer">
+              <strong>GitHub</strong>
+              <span>Code and open source</span>
+              <b aria-hidden="true">↗</b>
+            </a>
+        </section><section>
+          <h2>Build</h2>
+          <a class="tool-row" href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">
+              <strong>MDN</strong>
+              <span>Web documentation</span>
+              <b aria-hidden="true">↗</b>
+            </a><a class="tool-row" href="https://caniuse.com/" target="_blank" rel="noopener noreferrer">
+              <strong>Can I Use</strong>
+              <span>Browser compatibility</span>
+              <b aria-hidden="true">↗</b>
+            </a><a class="tool-row" href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
+              <strong>Vite</strong>
+              <span>Frontend build tool</span>
+              <b aria-hidden="true">↗</b>
+            </a>
+        </section><section>
+          <h2>AI / Tools</h2>
+          <a class="tool-row" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+              <strong>ChatGPT</strong>
+              <span>AI tools</span>
+              <b aria-hidden="true">↗</b>
+            </a><a class="tool-row" href="https://regex101.com/" target="_blank" rel="noopener noreferrer">
+              <strong>Regex101</strong>
+              <span>Regular expression tester</span>
+              <b aria-hidden="true">↗</b>
+            </a><a class="tool-row" href="https://jsoncrack.com/" target="_blank" rel="noopener noreferrer">
+              <strong>JSON Crack</strong>
+              <span>Data visualization</span>
+              <b aria-hidden="true">↗</b>
+            </a>
+        </section></div>
+    </section></main><footer>
+      <span>© 2026 LINN</span>
+      <span>WW / PERSONAL ENGINE</span>
+      <a href="#top">Back to top ↑</a>
+    </footer>
     </div>
+    <script>
+      // Progressive-enhancement handshake, run before first paint.
+      //
+      // scripts/build-routes.mjs replaces the placeholder above with the real
+      // prerendered page, so a visitor without JavaScript still gets the full
+      // homepage — but the entry gate would be an unopenable overlay, hence
+      // `.no-js` hides it via the stylesheet in <head>.
+      //
+      // `inert` on the gated content is applied here rather than baked into the
+      // static markup, for the same reason: no-JS visitors must not be locked
+      // out of content they can actually read.
+      (function () {
+        var root = document.documentElement;
+        var entered = false;
+        try {
+          entered = sessionStorage.getItem('wwhooo-entered') === '1';
+        } catch (e) {
+          /* private mode */
+        }
+        root.classList.remove('no-js');
+        if (entered) root.classList.add('entered');
+        var content = document.getElementById('home-content');
+        if (content && !entered) {
+          content.setAttribute('inert', '');
+          content.setAttribute('aria-hidden', 'true');
+        }
+      })();
+    </script>
   </body>
 </html>
