@@ -120,6 +120,15 @@ export const onAfterRender = (fn) => {
   afterRender = fn;
 };
 
+// The build prerenders every route, so on a fresh page load the container
+// already holds exactly the markup this module would produce. Rebuilding it
+// would discard painted content and force a full re-parse for no gain, so the
+// very first mount reconciles instead. `data-prerendered` (written by
+// scripts/build-routes.mjs, empty in the dev shell) is the guard against
+// reusing the wrong page — a misconfigured server handing back the homepage
+// must not silently render the homepage at an /en/works/ URL.
+let reconciled = false;
+
 /**
  * Render `path` into #app and sync the document head.
  * Returns the resolved route id, or null when the path is unknown.
@@ -129,12 +138,18 @@ export function mount(path = currentPath()) {
   const lang = resolved ? resolved.lang : inferLang(path);
   const id = resolved ? resolved.id : null;
   const def = id ? getRouteDef(id) : null;
+  const root = app();
 
   setContext(lang, id);
-  app().innerHTML = (id ? RENDERERS[id] : notFound)();
-  applyHead(def, lang);
+  const stamp = `${id ?? 'notfound'}:${lang}`;
+  const reuse = !reconciled && root.dataset.prerendered === stamp;
+  if (!reuse) root.innerHTML = (id ? RENDERERS[id] : notFound)();
+  reconciled = true;
 
+  applyHead(def, lang);
   document.body.classList.toggle('is-locked', id === 'home' && !hasEntered());
+  // gate.js reconciles the locked/unlocked classes for the reused markup, which
+  // was prerendered with hasEntered() === false.
   afterRender();
   return id;
 }

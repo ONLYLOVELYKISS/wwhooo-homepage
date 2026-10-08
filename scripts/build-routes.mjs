@@ -76,13 +76,26 @@ const removePreload = (html) =>
   html.replace(/\s*<link\s+rel="preload"[\s\S]*?>\s*(?=<!--|<script|<title)/, '\n    ');
 
 /**
+ * Stamp the container with the route/language it was prerendered for, so the
+ * client router can reconcile the existing DOM on first load instead of
+ * rebuilding identical markup. Left empty in the dev shell.
+ */
+const setStamp = (html, def, lang) =>
+  replaceOnce(
+    html,
+    /(<div id="app" data-prerendered=")[^"]*(")/,
+    `$1${def.id}:${lang}$2`,
+    '#app data-prerendered',
+  );
+
+/**
  * The boot placeholder and the prerendered page occupy the same slot. Matched
  * lazily up to the last `</div>` before the first script tag, so nesting inside
  * the placeholder cannot throw the replacement off. The classic handshake script
  * sits between `#app` and the module script, hence anchoring on `<script` rather
  * than on `<script type="module"`.
  */
-const APP_BLOCK = /(<div id="app">)([\s\S]*?)(<\/div>\s*<script)/;
+const APP_BLOCK = /(<div id="app"[^>]*>)([\s\S]*?)(<\/div>\s*<script)/;
 
 function prerenderApp(html, def, lang) {
   setContext(lang, def.id);
@@ -133,6 +146,7 @@ for (const def of ROUTE_DEFS) {
     }
 
     html = prerenderApp(html, def, lang);
+    html = setStamp(html, def, lang);
     prerendered += 1;
 
     const target = path === '/' ? join(dist, 'index.html') : join(dist, path.replace(/^\/|\/$/g, ''), 'index.html');
