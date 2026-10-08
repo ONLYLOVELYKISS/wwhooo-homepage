@@ -24,7 +24,9 @@ test/
 design/source/
   sakura-original.jpg          主视觉母版（不发布）
   optimize_assets.py           从母版生成 webp/jpg 派生图与品牌图标
-deploy/nginx/wwhooo.com.conf   Nginx 站点配置
+deploy/nginx/
+  wwhooo.com.conf              容器（nginx:alpine）用的 conf.d 片段 —— 生产实际使用
+  bare-metal.conf              宿主机直装 nginx 用的 sites-available 版本
 public/                        原样复制到 dist 的静态文件
 ```
 
@@ -64,9 +66,20 @@ npm test
 - `dist/images` 总重 < 400 KB，最大单张 < 120 KB
 - 构建产物里不再出现 `jsdelivr`
 
-## 部署（Debian + Nginx）
+## 部署（Debian + Docker + Cloudflare Tunnel）
 
-服务器只需要拉取 `deploy` 分支并同步到站点根目录：
+生产环境的实际拓扑：
+
+```
+cloudflared 容器  ──►  127.0.0.1:8080
+                        └─ static-site 容器（nginx:alpine）
+                             /etc/nginx/conf.d/default.conf  ◄── bind ro ── /opt/static-site/nginx.conf
+                             /usr/share/nginx/html           ◄── bind ro ── /opt/static-site/site
+```
+
+`nginx.conf` 是 `site/` 的兄弟路径而不是子目录，所以下面那条带 `--delete` 的 rsync 不会碰到它。
+
+### 发布站点
 
 ```bash
 cd /opt/static-site-deploy
@@ -75,18 +88,38 @@ git reset --hard origin/deploy
 rsync -a --delete --exclude='.git' ./ /opt/static-site/site/
 ```
 
-Nginx 配置见 [`deploy/nginx/wwhooo.com.conf`](deploy/nginx/wwhooo.com.conf)。关键一点：
+这台机器上的 `/opt/static-site-deploy` 检出的是 **deploy 分支**（只有站点产物，没有 `deploy/` 目录），所以**不要**在这里 `cp deploy/nginx/...`。要用配置文件时从 main 分支取：
+
+```bash
+cd /opt/static-site-deploy
+git fetch origin main
+git show origin/main:deploy/nginx/wwhooo.com.conf | sudo tee /opt/static-site/nginx.conf > /dev/null
+sudo docker exec static-site nginx -t && sudo docker exec static-site nginx -s reload
+```
+
+改配置**不需要**重启容器，`nginx -s reload` 会重新读取那个只读挂载。
+
+### 为什么不需要 SPA fallback
 
 ```nginx
 location / {
-    try_files $uri $uri/ =404;     # 不需要 SPA fallback
+    try_files $uri $uri/ =404;
 }
 error_page 404 /404.html;
 ```
 
-因为构建会为每个路由产出真实文件（`dist/engine/index.html` …），`/engine/` 由常规 `index` 查找命中，未知路径可以返回**真正的 404 状态码**，而不是 200 的软 404。这也是移除 GitHub Pages `/?/engine/` 重定向 hack 的前提 —— 旧方案每次深链都要多一次跳转和一次闪烁。
+构建会为每个路由产出真实文件（`dist/engine/index.html`、`dist/profile/index.html` …），所以 `/engine/` 由常规 `index` 查找命中，未知路径可以返回**真正的 404 状态码**而不是 200 软 404。
 
-TLS 由 Cloudflare 终结，**不要**在 Nginx 里写 `http → https` 跳转，会和 Cloudflare 的 "Always Use HTTPS" 打架并可能成环；请在 Cloudflare 面板开启该选项。若改由 Nginx 终结 TLS，用配置文件末尾注释掉的 `:443` 版本。
+注意：这条 `try_files` 一直在生产配置里，但**在这次改动之前 `/engine/` 仍然返回 404** —— 因为当时没有任何真实路由文件，也没有 `error_page`，`=404` 只能落到 nginx 默认错误页。那套 GitHub Pages 的 `/?/engine/` 重定向 hack 在 nginx 上从未生效过。修好它靠的是生成真实路由文件，不是改 nginx。
+
+### Cloudflare 侧的两项设置
+
+- **Always Use HTTPS**：在面板开启。**不要**在 nginx 里写 `http → https` 跳转，会和它打架甚至成环。
+- **Browser Cache TTL** 必须改成 **Respect Existing Headers**。Free 计划默认是 4 小时，会**覆盖**源站的 `Cache-Control` —— 这就是为什么配置修好之前，带内容哈希的 `assets/*.js` 只拿到 `max-age=14400`。源站现在发 `max-age=31536000, immutable`，但只有把这项改成尊重源站头才会真正生效。
+
+### 裸机（nginx 直接用 apt 装在宿主机）
+
+用 `deploy/nginx/bare-metal.conf`，它是完整的 `sites-available` server 块，和容器版**不通用**（容器版是 `conf.d` 片段，依赖镜像自带 `nginx.conf` 提供 `http {}`、mime types 和 `gzip on`）。
 
 ### 回滚
 
