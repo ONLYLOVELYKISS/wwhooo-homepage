@@ -11,8 +11,8 @@
     <link rel="alternate" hreflang="x-default" href="https://wwhooo.com/search/" />
     <meta name="robots" content="index, follow" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#e1e9e4" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101513" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" data-theme-color="light" content="#e1e9e4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" data-theme-color="dark" content="#101513" media="(prefers-color-scheme: dark)" />
 
     <meta property="og:title" content="Search — Linn" />
     <meta property="og:description" content="Switch search engines and start searching quickly." />
@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-xPG9hjFk.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DWUHogKc.css">
+    <script type="module" crossorigin src="/assets/index-DxXYaJYJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-43HJNwcZ.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -163,6 +163,7 @@
         <h1>Find what you<br><i>need.</i></h1>
         <p>Switch between familiar search engines and go straight to the results.</p>
       </div>
+      <form id="search-provider-state" hidden></form>
       <form class="search-panel" role="search" aria-label="Search" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
         <label class="search-query-label" for="search-query">What are you looking for?</label>
         <div class="search-row">
@@ -171,24 +172,24 @@
           <button type="submit" data-search-submit>Search with Google<span aria-hidden="true">↗</span></button>
         </div>
         <div class="search-controls">
-        <fieldset class="search-provider-control">
+        <fieldset class="search-provider-control" aria-describedby="search-provider-hint">
           <legend class="search-provider-label">Results open in</legend>
-          <p class="search-provider-hint">Choose a destination; the submit button will follow</p>
+          <p class="search-provider-hint" id="search-provider-hint">The submit button shows where results will open</p>
           <div class="search-provider-options">
             <label class="search-provider-option is-selected">
-              <input type="radio" name="search-provider" value="https://www.google.com/search" data-search-provider checked />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://www.google.com/search" data-search-provider checked disabled />
               <span>Google</span>
             </label>
             <label class="search-provider-option">
-              <input type="radio" name="search-provider" value="https://www.bing.com/search" data-search-provider />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://www.bing.com/search" data-search-provider disabled />
               <span>Bing</span>
             </label>
             <label class="search-provider-option">
-              <input type="radio" name="search-provider" value="https://duckduckgo.com/" data-search-provider />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://duckduckgo.com/" data-search-provider disabled />
               <span>DuckDuckGo</span>
             </label>
             <label class="search-provider-option">
-              <input type="radio" name="search-provider" value="https://github.com/search" data-search-provider />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://github.com/search" data-search-provider disabled />
               <span>GitHub</span>
             </label>
           </div>
