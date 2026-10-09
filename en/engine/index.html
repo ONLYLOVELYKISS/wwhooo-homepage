@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DxXYaJYJ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-43HJNwcZ.css">
+    <script type="module" crossorigin src="/assets/index-CeIRzStt.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CGh4O5OG.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -163,47 +163,53 @@
         <h1>A few places I<br><i>return to.</i></h1>
         <p>Simple, useful, and close at hand.</p>
       </div>
-      <div class="tool-groups"><section>
+      <div class="tool-filter" role="search">
+        <label for="tool-filter-query">Filter entries</label>
+        <input id="tool-filter-query" type="search" data-tool-filter placeholder="Search by name or purpose" autocomplete="off" />
+        <span class="tool-filter-count" data-tool-filter-count aria-live="polite"></span>
+      </div>
+      <p class="tool-filter-empty" data-tool-filter-empty hidden>No matching entries.</p>
+      <div class="tool-groups"><section data-tool-group>
           <h2>Search</h2>
-          <a class="tool-row" href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+          <a class="tool-row" data-tool-entry data-tool-search="search google general search" href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
               <strong>Google</strong>
               <span>General search</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="search bing search and images" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer">
               <strong>Bing</strong>
               <span>Search and images</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://github.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="search github code and open source" href="https://github.com/" target="_blank" rel="noopener noreferrer">
               <strong>GitHub</strong>
               <span>Code and open source</span>
               <b aria-hidden="true">↗</b>
             </a>
-        </section><section>
+        </section><section data-tool-group>
           <h2>Build</h2>
-          <a class="tool-row" href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">
+          <a class="tool-row" data-tool-entry data-tool-search="build mdn web documentation" href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">
               <strong>MDN</strong>
               <span>Web documentation</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://caniuse.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="build can i use browser compatibility" href="https://caniuse.com/" target="_blank" rel="noopener noreferrer">
               <strong>Can I Use</strong>
               <span>Browser compatibility</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="build vite frontend build tool" href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
               <strong>Vite</strong>
               <span>Frontend build tool</span>
               <b aria-hidden="true">↗</b>
             </a>
-        </section><section>
+        </section><section data-tool-group>
           <h2>AI / Tools</h2>
-          <a class="tool-row" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+          <a class="tool-row" data-tool-entry data-tool-search="ai / tools chatgpt ai tools" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
               <strong>ChatGPT</strong>
               <span>AI tools</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://regex101.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="ai / tools regex101 regular expression tester" href="https://regex101.com/" target="_blank" rel="noopener noreferrer">
               <strong>Regex101</strong>
               <span>Regular expression tester</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://jsoncrack.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="ai / tools json crack data visualization" href="https://jsoncrack.com/" target="_blank" rel="noopener noreferrer">
               <strong>JSON Crack</strong>
               <span>Data visualization</span>
               <b aria-hidden="true">↗</b>

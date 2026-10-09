@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DxXYaJYJ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-43HJNwcZ.css">
+    <script type="module" crossorigin src="/assets/index-CeIRzStt.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CGh4O5OG.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -198,7 +198,20 @@
         </div>
         <p class="search-privacy">搜索内容会直接发送给所选搜索服务；本站不会保存查询。</p>
       </form>
-      <section class="search-guide" aria-labelledby="search-guide-title">
+      <section class="search-quick" aria-labelledby="search-quick-title">
+         <div>
+           <span class="kicker">SEARCH / ROUTES</span>
+           <h2 id="search-quick-title">快速入口</h2>
+           <p>直接把查询带到对应入口</p>
+         </div>
+         <div class="search-quick-grid">
+           <button type="button" data-search-route="https://www.google.com/search" data-search-param="q" data-search-label="网页"><span>⌕</span><b>网页</b><small>!web</small></button>
+           <button type="button" data-search-route="https://www.google.com/search?tbm=isch" data-search-param="q" data-search-label="图片"><span>▧</span><b>图片</b><small>!images</small></button>
+           <button type="button" data-search-route="https://www.google.com/maps/search" data-search-param="query" data-search-label="地图"><span>⌖</span><b>地图</b><small>!map</small></button>
+           <button type="button" data-search-route="https://github.com/search" data-search-param="q" data-search-label="代码"><span>&lt;/&gt;</span><b>代码</b><small>!code</small></button>
+         </div>
+       </section>
+       <section class="search-guide" aria-labelledby="search-guide-title">
         <div class="search-guide-heading">
           <span class="kicker">SEARCH / NOTES</span>
           <h2 id="search-guide-title">让搜索更精确</h2>

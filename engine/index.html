@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DxXYaJYJ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-43HJNwcZ.css">
+    <script type="module" crossorigin src="/assets/index-CeIRzStt.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CGh4O5OG.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -163,47 +163,53 @@
         <h1>我会反复打开的<br><i>一些入口。</i></h1>
         <p>保持简单，保持可用。把常用的东西放在顺手的位置。</p>
       </div>
-      <div class="tool-groups"><section>
+      <div class="tool-filter" role="search">
+        <label for="tool-filter-query">筛选入口</label>
+        <input id="tool-filter-query" type="search" data-tool-filter placeholder="搜索工具名称或用途" autocomplete="off" />
+        <span class="tool-filter-count" data-tool-filter-count aria-live="polite"></span>
+      </div>
+      <p class="tool-filter-empty" data-tool-filter-empty hidden>没有匹配的入口。</p>
+      <div class="tool-groups"><section data-tool-group>
           <h2>Search</h2>
-          <a class="tool-row" href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
+          <a class="tool-row" data-tool-entry data-tool-search="search google 通用搜索" href="https://www.google.com/" target="_blank" rel="noopener noreferrer">
               <strong>Google</strong>
               <span>通用搜索</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="search bing 搜索与图像" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer">
               <strong>Bing</strong>
               <span>搜索与图像</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://github.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="search github 代码与开源" href="https://github.com/" target="_blank" rel="noopener noreferrer">
               <strong>GitHub</strong>
               <span>代码与开源</span>
               <b aria-hidden="true">↗</b>
             </a>
-        </section><section>
+        </section><section data-tool-group>
           <h2>Build</h2>
-          <a class="tool-row" href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">
+          <a class="tool-row" data-tool-entry data-tool-search="build mdn web 文档" href="https://developer.mozilla.org/" target="_blank" rel="noopener noreferrer">
               <strong>MDN</strong>
               <span>Web 文档</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://caniuse.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="build can i use 兼容性查询" href="https://caniuse.com/" target="_blank" rel="noopener noreferrer">
               <strong>Can I Use</strong>
               <span>兼容性查询</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="build vite 前端构建" href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
               <strong>Vite</strong>
               <span>前端构建</span>
               <b aria-hidden="true">↗</b>
             </a>
-        </section><section>
+        </section><section data-tool-group>
           <h2>AI / Tools</h2>
-          <a class="tool-row" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+          <a class="tool-row" data-tool-entry data-tool-search="ai / tools chatgpt ai 工具" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
               <strong>ChatGPT</strong>
               <span>AI 工具</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://regex101.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="ai / tools regex101 正则调试" href="https://regex101.com/" target="_blank" rel="noopener noreferrer">
               <strong>Regex101</strong>
               <span>正则调试</span>
               <b aria-hidden="true">↗</b>
-            </a><a class="tool-row" href="https://jsoncrack.com/" target="_blank" rel="noopener noreferrer">
+            </a><a class="tool-row" data-tool-entry data-tool-search="ai / tools json crack 数据可视化" href="https://jsoncrack.com/" target="_blank" rel="noopener noreferrer">
               <strong>JSON Crack</strong>
               <span>数据可视化</span>
               <b aria-hidden="true">↗</b>

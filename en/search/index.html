@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DxXYaJYJ.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-43HJNwcZ.css">
+    <script type="module" crossorigin src="/assets/index-CeIRzStt.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CGh4O5OG.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -198,7 +198,20 @@
         </div>
         <p class="search-privacy">Queries are sent directly to the selected search provider; this site does not store them.</p>
       </form>
-      <section class="search-guide" aria-labelledby="search-guide-title">
+      <section class="search-quick" aria-labelledby="search-quick-title">
+         <div>
+           <span class="kicker">SEARCH / ROUTES</span>
+           <h2 id="search-quick-title">Quick routes</h2>
+           <p>Send the query straight to a focused route</p>
+         </div>
+         <div class="search-quick-grid">
+           <button type="button" data-search-route="https://www.google.com/search" data-search-param="q" data-search-label="Web"><span>⌕</span><b>Web</b><small>!web</small></button>
+           <button type="button" data-search-route="https://www.google.com/search?tbm=isch" data-search-param="q" data-search-label="Images"><span>▧</span><b>Images</b><small>!images</small></button>
+           <button type="button" data-search-route="https://www.google.com/maps/search" data-search-param="query" data-search-label="Maps"><span>⌖</span><b>Maps</b><small>!map</small></button>
+           <button type="button" data-search-route="https://github.com/search" data-search-param="q" data-search-label="Code"><span>&lt;/&gt;</span><b>Code</b><small>!code</small></button>
+         </div>
+       </section>
+       <section class="search-guide" aria-labelledby="search-guide-title">
         <div class="search-guide-heading">
           <span class="kicker">SEARCH / NOTES</span>
           <h2 id="search-guide-title">Search with precision</h2>
