@@ -430,6 +430,10 @@ img {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+html.no-js .search-provider-hint,
+html.no-js .search-provider-option:not(.is-selected) {
+  display: none;
+}
 .search-provider-option input {
   position: absolute;
   inline-size: 1px;
@@ -1615,16 +1619,31 @@ footer a:hover {
     height: 54px;
     padding: 0 16px;
     border-radius: 28px;
+    overflow: visible;
   }
   .site-header nav {
     gap: 12px;
     margin-left: auto;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    white-space: nowrap;
     font-size: 10px;
+  }
+  .site-header nav::-webkit-scrollbar {
+    display: none;
+  }
+  .site-header nav a {
+    flex: 0 0 auto;
   }
   .language {
     margin-left: 10px;
     font-size: 9.5px;
     padding: 3px 8px;
+  }
+  .site-header .theme-control select {
+    max-width: 74px;
   }
 
   /* 门禁在移动端改为上下堆叠；整个视口仍由门禁统一接收手势。 */

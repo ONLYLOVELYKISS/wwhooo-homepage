@@ -155,6 +155,11 @@ export function mount(path = currentPath()) {
   return id;
 }
 
+function focusRouteTop() {
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  document.querySelector('#top')?.focus({ preventScroll: true });
+}
+
 /** Navigate without a full page load. */
 export function navigate(path, { hash = '', replace = false } = {}) {
   const url = `${path}${hash}`;
@@ -165,12 +170,12 @@ export function navigate(path, { hash = '', replace = false } = {}) {
     document.querySelector(hash)?.scrollIntoView();
     return;
   }
-  window.scrollTo(0, 0);
-  document.querySelector('#top')?.focus({ preventScroll: true });
+  focusRouteTop();
 }
 
 /** Intercept same-origin clicks on known routes; everything else stays native. */
 export function initLinks() {
+  history.scrollRestoration = 'manual';
   document.addEventListener('click', (event) => {
     if (event.defaultPrevented || event.button !== 0) return;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -194,5 +199,6 @@ export function initLinks() {
 
   window.addEventListener('popstate', () => {
     mount(currentPath());
+    focusRouteTop();
   });
 }

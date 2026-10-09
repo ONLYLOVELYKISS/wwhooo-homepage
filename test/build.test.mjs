@@ -73,8 +73,14 @@ test('every HTML entry advertises automatic light and dark themes', async () => 
   for (const routePath of ALL_PATHS) {
     const html = await readRoute(routePath);
     assert.match(html, /<meta name="color-scheme" content="light dark"/i, `${routePath} color scheme`);
-    assert.match(html, /<meta name="theme-color" content="#e1e9e4" media="\(prefers-color-scheme: light\)"/i);
-    assert.match(html, /<meta name="theme-color" content="#101513" media="\(prefers-color-scheme: dark\)"/i);
+    assert.match(
+      html,
+      /<meta name="theme-color" data-theme-color="light" content="#e1e9e4" media="\(prefers-color-scheme: light\)"/i,
+    );
+    assert.match(
+      html,
+      /<meta name="theme-color" data-theme-color="dark" content="#101513" media="\(prefers-color-scheme: dark\)"/i,
+    );
     assert.match(html, /@media\s*\(prefers-color-scheme:\s*dark\)/i, `${routePath} dark CSS`);
   }
 

@@ -11,11 +11,33 @@ import { initLinks, mount, onAfterRender } from './router.js';
 
 const THEME_STORAGE_KEY = 'wwhooo-theme';
 const VALID_THEMES = new Set(['system', 'light', 'dark']);
+const LIGHT_THEME_COLOR = '#e1e9e4';
+const DARK_THEME_COLOR = '#101513';
+const searchReady = { click: false, keydown: false };
 let themeReady = false;
+
+function syncThemeColor(theme) {
+  const light = document.querySelector('meta[data-theme-color="light"]');
+  const dark = document.querySelector('meta[data-theme-color="dark"]');
+  if (!light || !dark) return;
+  light.content = LIGHT_THEME_COLOR;
+  dark.content = DARK_THEME_COLOR;
+  if (theme === 'light') {
+    light.media = '';
+    dark.media = 'not all';
+  } else if (theme === 'dark') {
+    light.media = 'not all';
+    dark.media = '';
+  } else {
+    light.media = '(prefers-color-scheme: light)';
+    dark.media = '(prefers-color-scheme: dark)';
+  }
+}
 
 function applyTheme(theme) {
   const selected = VALID_THEMES.has(theme) ? theme : 'system';
   document.documentElement.dataset.theme = selected;
+  syncThemeColor(selected);
   document.querySelectorAll('[data-theme-control]').forEach((control) => {
     try {
       control.value = selected;
@@ -27,7 +49,12 @@ function applyTheme(theme) {
 }
 
 function initTheme() {
-  const stored = localStorage.getItem(THEME_STORAGE_KEY) ?? 'system';
+  let stored = document.documentElement.dataset.theme ?? 'system';
+  try {
+    stored = localStorage.getItem(THEME_STORAGE_KEY) ?? stored;
+  } catch {
+    // Storage may be blocked; theme and other interactions must still work.
+  }
   applyTheme(stored);
   if (themeReady) return;
   themeReady = true;
@@ -35,11 +62,13 @@ function initTheme() {
     const control = event.target.closest?.('[data-theme-control]');
     if (!control) return;
     const selected = applyTheme(control.value);
-    localStorage.setItem(THEME_STORAGE_KEY, selected);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, selected);
+    } catch {
+      // Keep the choice for this document even when it cannot be persisted.
+    }
   });
 }
-
-let searchShortcutReady = false;
 
 function initSearch() {
   const form = document.querySelector('[data-search-form]');
@@ -47,6 +76,9 @@ function initSearch() {
   const providers = form?.querySelectorAll('[data-search-provider]');
   if (!form || !input || !providers?.length || form.dataset.ready) return;
   form.dataset.ready = 'true';
+  providers.forEach((provider) => {
+    provider.disabled = false;
+  });
   const submit = form.querySelector('[data-search-submit]');
   const syncProvider = (provider) => {
     form.action = provider.value;
@@ -56,17 +88,20 @@ function initSearch() {
   };
   providers.forEach((provider) => provider.addEventListener('change', () => syncProvider(provider)));
   syncProvider(form.querySelector('[data-search-provider]:checked') ?? providers[0]);
-  document.addEventListener('click', (event) => {
-    const button = event.target.closest?.('[data-query-template]');
-    if (!button) return;
-    const currentInput = document.querySelector('[data-search-form] input[name="q"]');
-    if (!currentInput) return;
-    const template = button.getAttribute('data-query-template') ?? '';
-    currentInput.value = `${template} `;
-    currentInput.focus();
-    currentInput.setSelectionRange(currentInput.value.length, currentInput.value.length);
-  });
-  if (!searchShortcutReady) {
+  if (!searchReady.click) {
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest?.('[data-query-template]');
+      if (!button) return;
+      const currentInput = document.querySelector('[data-search-form] input[name="q"]');
+      if (!currentInput) return;
+      const template = button.getAttribute('data-query-template') ?? '';
+      currentInput.value = `${template} `;
+      currentInput.focus();
+      currentInput.setSelectionRange(currentInput.value.length, currentInput.value.length);
+    });
+    searchReady.click = true;
+  }
+  if (!searchReady.keydown) {
     document.addEventListener('keydown', (event) => {
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const target = event.target;
@@ -81,7 +116,7 @@ function initSearch() {
         target.value = '';
       }
     });
-    searchShortcutReady = true;
+    searchReady.keydown = true;
   }
   form.addEventListener('submit', (event) => {
     if (input.value.trim()) return;

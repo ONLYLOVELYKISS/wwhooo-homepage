@@ -139,11 +139,20 @@ test('the page tracks light and dark system preference live', async () => {
 
 test('manual theme modes override the system and persist', async () => {
   const { context, page } = await open('/', { colorScheme: 'dark' });
+  await page.evaluate(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = '#123456';
+    meta.dataset.unrelatedThemeColor = '';
+    document.head.prepend(meta);
+  });
   await page.locator('[data-theme-control]').selectOption('light');
-  assert.equal(
-    await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--paper').trim()),
-    '#e1e9e4',
-  );
+  assert.equal(await page.locator('meta[data-theme-color="light"]').getAttribute('media'), '');
+  assert.equal(await page.locator('meta[data-theme-color="dark"]').getAttribute('media'), 'not all');
+  assert.equal(await page.locator('meta[data-theme-color="light"]').getAttribute('content'), '#e1e9e4');
+  assert.equal(await page.locator('meta[name="theme-color"]').first().getAttribute('content'), '#123456');
+  await page.locator('meta[data-unrelated-theme-color]').evaluate((meta) => meta.remove());
+
   assert.equal(await page.evaluate(() => localStorage.getItem('wwhooo-theme')), 'light');
   await page.reload();
   assert.equal(await page.locator('[data-theme-control]').inputValue(), 'light');
@@ -161,6 +170,29 @@ test('manual theme modes override the system and persist', async () => {
   await context.close();
 });
 
+test('mobile header stays inside the viewport at narrow widths', async () => {
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+  ]) {
+    const { context, page } = await open('/search/', { viewport });
+    const header = await page.locator('.site-header').boundingBox();
+    const nav = await page.locator('.site-header nav').boundingBox();
+    assert.ok(header && nav, 'header and nav must be measurable');
+    const controls = await page.evaluate(() =>
+      ['.brand', '.site-header nav', '.language', '.theme-control'].map((selector) => {
+        const { left, right } = document.querySelector(selector).getBoundingClientRect();
+        return { left, right };
+      }),
+    );
+    for (let index = 1; index < controls.length; index++) {
+      assert.ok(controls[index - 1].right <= controls[index].left + 1, 'header controls must not overlap');
+    }
+    assert.ok(await page.locator('.site-header nav').evaluate((el) => el.scrollWidth > el.clientWidth));
+    assert.equal(await page.locator('.site-header nav').evaluate((el) => getComputedStyle(el).overflowX), 'auto');
+    await context.close();
+  }
+});
 test('mobile bottom actions do not overlap on Xiaomi-sized viewport', async () => {
   const { context, page } = await open('/', { viewport: { width: 393, height: 873 }, hasTouch: true });
   await page.locator('#entry-gate').click({ position: { x: 196, y: 436 } });
@@ -191,8 +223,125 @@ test('the search site works in both language trees', async () => {
     );
     await page.locator('input[name="q"]').fill('wwhooo');
     assert.equal(await page.locator('input[name="q"]').inputValue(), 'wwhooo');
+    assert.deepEqual(await page.locator('[data-search-form]').evaluate((form) => [...new FormData(form).entries()]), [
+      ['q', 'wwhooo'],
+    ]);
     await context.close();
   }
+});
+
+test('provider radios retain native arrow-key grouping', async () => {
+  const { context, page } = await open('/en/search/');
+  const google = page.locator('[data-search-provider][value="https://www.google.com/search"]');
+  await google.focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await page.locator('[data-search-provider]:checked').count(), 1);
+  assert.equal(await page.locator('[data-search-provider]:checked').inputValue(), 'https://www.bing.com/search');
+  assert.equal(await page.locator('[data-search-form]').getAttribute('action'), 'https://www.bing.com/search');
+  assert.equal((await page.locator('[data-search-submit]').textContent()).trim(), 'Search with Bing↗');
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await page.locator('[data-search-provider]:checked').count(), 1);
+  assert.equal(await page.locator('[data-search-provider]:checked').inputValue(), 'https://duckduckgo.com/');
+  assert.equal(await page.locator('.search-provider-option.is-selected').count(), 1);
+  await context.close();
+});
+
+test('native search submissions send only the query to each destination', async () => {
+  const query = 'a+b & accessibility/无障碍';
+  for (const javaScriptEnabled of [true, false]) {
+    const { context, page } = await open('/search/', { javaScriptEnabled });
+    await context.route(/^https:\/\/(www\.google\.com|www\.bing\.com|duckduckgo\.com|github\.com)\//, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><title>Search request captured</title>',
+      }),
+    );
+    const destinations = javaScriptEnabled
+      ? [
+          'https://www.google.com/search',
+          'https://www.bing.com/search',
+          'https://duckduckgo.com/',
+          'https://github.com/search',
+        ]
+      : ['https://www.google.com/search'];
+    for (const destination of destinations) {
+      if (javaScriptEnabled) await page.locator(`[data-search-provider][value="${destination}"]`).check();
+      await page.locator('#search-query').fill(query);
+      const [request, popup] = await Promise.all([
+        context.waitForEvent('request', {
+          predicate: (request) => request.isNavigationRequest() && request.url().startsWith(destination),
+        }),
+        context.waitForEvent('page'),
+        page.locator('[data-search-submit]').click(),
+      ]);
+      const url = new URL(request.url());
+      assert.equal(`${url.origin}${url.pathname}`, destination);
+      assert.equal(request.method(), 'GET');
+      assert.deepEqual([...url.searchParams.entries()], [['q', query]]);
+      await popup.close();
+    }
+    await context.close();
+  }
+});
+
+test('blocked theme storage does not interrupt page interactions', async () => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(String(error)));
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        throw new DOMException('Storage blocked', 'SecurityError');
+      },
+    });
+  });
+  await page.goto(`${site.url}/search/`, { waitUntil: 'load' });
+  await page.locator('[data-theme-control]').selectOption('dark');
+  await page.locator('[data-search-provider][value="https://www.bing.com/search"]').check();
+  assert.equal(await page.locator('[data-search-form]').getAttribute('action'), 'https://www.bing.com/search');
+  await page.locator('.site-header nav a[href="/profile/"]').click();
+  await page.waitForURL('**/profile/');
+  assert.equal(await page.locator('[data-theme-control]').inputValue(), 'dark');
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test('search route visits do not accumulate delegated listeners', async () => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.__documentClickListeners = 0;
+    const original = Document.prototype.addEventListener;
+    Document.prototype.addEventListener = function (type, listener, options) {
+      if (type === 'click') window.__documentClickListeners += 1;
+      return original.call(this, type, listener, options);
+    };
+  });
+  await page.goto(`${site.url}/search/`, { waitUntil: 'load' });
+  const initialCount = await page.evaluate(() => window.__documentClickListeners);
+  await page.locator('.site-header nav a[href="/profile/"]').click();
+  await page.waitForURL('**/profile/');
+  await page.locator('.site-header nav a[href="/search/"]').click();
+  await page.waitForURL('**/search/');
+  assert.equal(await page.evaluate(() => window.__documentClickListeners), initialCount);
+  await page.locator('.search-operators button').first().click();
+  assert.equal(await page.locator('#search-query').inputValue(), 'site:developer.mozilla.org ');
+  await context.close();
+});
+
+test('browser history navigation restores focus and scroll context', async () => {
+  const { context, page } = await open('/search/');
+  await page.locator('.site-header nav a[href="/profile/"]').click();
+  await page.waitForURL('**/profile/');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.goBack();
+  await page.waitForURL('**/search/');
+  await page.waitForFunction(() => document.activeElement?.matches('#top'));
+  assert.equal(await page.evaluate(() => window.scrollY), 0);
+  assert.equal(await page.locator('[data-search-form]').count(), 1);
+  await context.close();
 });
 
 test('the search page offers operator templates and keyboard shortcuts', async () => {
@@ -229,6 +378,12 @@ test('search controls remain responsive and progressively enhanced', async () =>
     'https://www.google.com/search',
   );
   assert.equal(await noScript.page.locator('[data-search-provider]').count(), 4);
+  assert.equal(await noScript.page.locator('[data-search-provider]:visible').count(), 1);
+  assert.equal(await noScript.page.locator('[data-search-provider]:enabled').count(), 0);
+  assert.equal(
+    await noScript.page.locator('[data-search-provider]:checked').inputValue(),
+    'https://www.google.com/search',
+  );
   await noScript.context.close();
 });
 
@@ -455,6 +610,8 @@ test('no axe-core violations on public pages in both color schemes', async () =>
     '/en/profile/',
     '/works/',
     '/en/works/',
+    '/search/',
+    '/en/search/',
     '/404.html',
   ];
 

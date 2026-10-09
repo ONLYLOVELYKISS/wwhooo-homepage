@@ -263,6 +263,7 @@ export function searchPage() {
         <h1>${t().searchHeading}</h1>
         <p>${t().searchIntro}</p>
       </div>
+      <form id="search-provider-state" hidden></form>
       <form class="search-panel" role="search" aria-label="${t().search}" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
         <label class="search-query-label" for="search-query">${t().searchPlaceholder}</label>
         <div class="search-row">
@@ -271,24 +272,24 @@ export function searchPage() {
           <button type="submit" data-search-submit>${t().searchWith} Google<span aria-hidden="true">↗</span></button>
         </div>
         <div class="search-controls">
-        <fieldset class="search-provider-control">
+        <fieldset class="search-provider-control" aria-describedby="search-provider-hint">
           <legend class="search-provider-label">${t().searchProvider}</legend>
-          <p class="search-provider-hint">${t().searchProviderHint}</p>
+          <p class="search-provider-hint" id="search-provider-hint">${t().searchProviderHint}</p>
           <div class="search-provider-options">
             <label class="search-provider-option is-selected">
-              <input type="radio" name="search-provider" value="https://www.google.com/search" data-search-provider checked />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://www.google.com/search" data-search-provider checked disabled />
               <span>Google</span>
             </label>
             <label class="search-provider-option">
-              <input type="radio" name="search-provider" value="https://www.bing.com/search" data-search-provider />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://www.bing.com/search" data-search-provider disabled />
               <span>Bing</span>
             </label>
             <label class="search-provider-option">
-              <input type="radio" name="search-provider" value="https://duckduckgo.com/" data-search-provider />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://duckduckgo.com/" data-search-provider disabled />
               <span>DuckDuckGo</span>
             </label>
             <label class="search-provider-option">
-              <input type="radio" name="search-provider" value="https://github.com/search" data-search-provider />
+              <input type="radio" name="search-provider" form="search-provider-state" value="https://github.com/search" data-search-provider disabled />
               <span>GitHub</span>
             </label>
           </div>
