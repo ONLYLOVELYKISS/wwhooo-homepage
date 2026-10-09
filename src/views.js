@@ -250,6 +250,12 @@ export function engine() {
 }
 
 export function searchPage() {
+  const operators = [
+    ['site:developer.mozilla.org ', t().searchSiteLabel, 'site:developer.mozilla.org'],
+    ['"flexible box layout" ', t().searchPhraseLabel, '"flexible box layout"'],
+    ['-template ', t().searchExcludeLabel, '-template'],
+    ['filetype:pdf ', t().searchFileLabel, 'filetype:pdf'],
+  ];
   return page(
     `<section class="inner-page search-page">
       <div class="page-intro">
@@ -257,20 +263,45 @@ export function searchPage() {
         <h1>${t().searchHeading}</h1>
         <p>${t().searchIntro}</p>
       </div>
-      <form class="search-panel" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
-        <label for="search-query">${t().searchPlaceholder}</label>
+      <form class="search-panel" role="search" aria-label="${t().search}" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
+        <label class="search-query-label" for="search-query">${t().searchPlaceholder}</label>
         <div class="search-row">
-          <input id="search-query" name="q" type="search" placeholder="${t().searchPlaceholder}" autocomplete="off" required />
+          <span class="search-symbol" aria-hidden="true">⌕</span>
+          <input id="search-query" name="q" type="search" placeholder="${t().searchPlaceholder}" autocomplete="off" required aria-keyshortcuts="/ Escape" />
           <button type="submit">${t().searchSubmit}<span aria-hidden="true">↗</span></button>
         </div>
-        <label class="search-provider-label" for="search-provider">${t().searchProvider}</label>
-        <select id="search-provider" class="search-provider-select" data-search-provider>
-          <option value="https://www.google.com/search">Google</option>
-          <option value="https://www.bing.com/search">Bing</option>
-          <option value="https://duckduckgo.com/">DuckDuckGo</option>
-          <option value="https://github.com/search">GitHub</option>
-        </select>
+        <div class="search-controls">
+          <div class="search-provider-control">
+            <label class="search-provider-label" for="search-provider">${t().searchProvider}</label>
+            <select id="search-provider" class="search-provider-select" data-search-provider>
+              <option value="https://www.google.com/search">Google</option>
+              <option value="https://www.bing.com/search">Bing</option>
+              <option value="https://duckduckgo.com/">DuckDuckGo</option>
+              <option value="https://github.com/search">GitHub</option>
+            </select>
+          </div>
+          <span class="search-shortcut"><kbd>/</kbd> ${t().searchShortcut}</span>
+        </div>
+        <p class="search-privacy">${t().searchPrivacy}</p>
       </form>
+      <section class="search-guide" aria-labelledby="search-guide-title">
+        <div class="search-guide-heading">
+          <span class="kicker">SEARCH / NOTES</span>
+          <h2 id="search-guide-title">${t().searchOperators}</h2>
+          <p>${t().searchOperatorIntro}</p>
+        </div>
+        <ul class="search-operators">
+          ${operators
+            .map(
+              ([query, label, code]) => `<li>
+                <button type="button" data-query-template="${query.trimEnd().replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">
+                  <code>${code}</code><span>${label}</span><b aria-hidden="true">+</b>
+                </button>
+              </li>`,
+            )
+            .join('')}
+        </ul>
+      </section>
     </section>`,
     'search',
   );

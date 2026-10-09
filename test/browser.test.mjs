@@ -187,6 +187,42 @@ test('the search site works in both language trees', async () => {
   }
 });
 
+test('the search page offers operator templates and keyboard shortcuts', async () => {
+  const { context, page } = await open('/search/');
+  const input = page.locator('#search-query');
+  await page.keyboard.press('/');
+  await expectFocused(page, '#search-query');
+  await page.locator('.search-operators button').first().click();
+  assert.equal(await input.inputValue(), 'site:developer.mozilla.org ');
+  await page.keyboard.type('accessibility');
+  assert.equal(await input.inputValue(), 'site:developer.mozilla.org accessibility');
+  await page.keyboard.press('Escape');
+  assert.equal(await input.inputValue(), '');
+  assert.equal(await page.locator('.search-operators li').count(), 4);
+  await context.close();
+});
+
+async function expectFocused(page, selector) {
+  await page.waitForFunction((expected) => document.activeElement?.matches(expected), selector);
+}
+test('search controls remain responsive and progressively enhanced', async () => {
+  const mobile = await open('/search/', { viewport: { width: 320, height: 568 } });
+  const bounds = await mobile.page.locator('.search-panel').boundingBox();
+  assert.ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 320, 'search panel must fit a narrow viewport');
+  assert.equal(await mobile.page.locator('[data-search-form]').getAttribute('method'), 'get');
+  assert.equal(await mobile.page.locator('[data-search-form]').getAttribute('action'), 'https://www.google.com/search');
+  await mobile.context.close();
+
+  const noScript = await open('/search/', { javaScriptEnabled: false });
+  assert.equal(await noScript.page.locator('[data-search-form]').getAttribute('method'), 'get');
+  assert.equal(
+    await noScript.page.locator('[data-search-form]').getAttribute('action'),
+    'https://www.google.com/search',
+  );
+  assert.equal(await noScript.page.locator('[data-search-provider] option').count(), 4);
+  await noScript.context.close();
+});
+
 test('the dark palette is present in no-JS and standalone 404 experiences', async () => {
   const fallback = await open('/', { javaScriptEnabled: false, colorScheme: 'dark' });
   const fallbackColors = await fallback.page.evaluate(() => ({

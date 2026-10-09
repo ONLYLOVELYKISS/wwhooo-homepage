@@ -39,6 +39,8 @@ function initTheme() {
   });
 }
 
+let searchShortcutReady = false;
+
 function initSearch() {
   const form = document.querySelector('[data-search-form]');
   const input = form?.querySelector('input[name="q"]');
@@ -48,6 +50,33 @@ function initSearch() {
   provider.addEventListener('change', () => {
     form.action = provider.value;
   });
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest?.('[data-query-template]');
+    if (!button) return;
+    const currentInput = document.querySelector('[data-search-form] input[name="q"]');
+    if (!currentInput) return;
+    const template = button.getAttribute('data-query-template') ?? '';
+    currentInput.value = `${template} `;
+    currentInput.focus();
+    currentInput.setSelectionRange(currentInput.value.length, currentInput.value.length);
+  });
+  if (!searchShortcutReady) {
+    document.addEventListener('keydown', (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target;
+      const editing =
+        target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+      if (event.key === '/' && !editing) {
+        const currentInput = document.querySelector('[data-search-form] input[name="q"]');
+        if (!currentInput) return;
+        event.preventDefault();
+        currentInput.focus();
+      } else if (event.key === 'Escape' && target.matches?.('[data-search-form] input[name="q"]')) {
+        target.value = '';
+      }
+    });
+    searchShortcutReady = true;
+  }
   form.addEventListener('submit', (event) => {
     if (input.value.trim()) return;
     event.preventDefault();
