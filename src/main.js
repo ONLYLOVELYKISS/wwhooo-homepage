@@ -47,9 +47,12 @@ function initSearch() {
   const providers = form?.querySelectorAll('[data-search-provider]');
   if (!form || !input || !providers?.length || form.dataset.ready) return;
   form.dataset.ready = 'true';
+  const submit = form.querySelector('[data-search-submit]');
   const syncProvider = (provider) => {
     form.action = provider.value;
     providers.forEach((option) => option.closest('label')?.classList.toggle('is-selected', option === provider));
+    if (submit)
+      submit.firstChild.textContent = `${document.documentElement.lang === 'en' ? 'Search with' : '使用'} ${provider.closest('label')?.querySelector('span')?.textContent ?? 'Google'}`;
   };
   providers.forEach((provider) => provider.addEventListener('change', () => syncProvider(provider)));
   syncProvider(form.querySelector('[data-search-provider]:checked') ?? providers[0]);

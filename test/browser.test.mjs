@@ -180,9 +180,15 @@ test('the search site works in both language trees', async () => {
     assert.equal(await page.locator('[data-search-form]').count(), 1);
     assert.equal(await page.locator('[data-search-provider]').count(), 4);
     assert.equal(await page.locator('[data-search-provider]:checked').inputValue(), 'https://www.google.com/search');
+    const initialSubmit = await page.locator('[data-search-submit]').textContent();
+    assert.equal(initialSubmit?.trim(), path.startsWith('/en/') ? 'Search with Google↗' : '使用 Google↗');
     await page.locator('[data-search-provider][value="https://www.bing.com/search"]').check();
     assert.equal(await page.locator('[data-search-form]').getAttribute('action'), 'https://www.bing.com/search');
     assert.ok(await page.locator('.search-provider-option.is-selected').filter({ hasText: 'Bing' }).count());
+    assert.equal(
+      (await page.locator('[data-search-submit]').textContent())?.trim(),
+      path.startsWith('/en/') ? 'Search with Bing↗' : '使用 Bing↗',
+    );
     await page.locator('input[name="q"]').fill('wwhooo');
     assert.equal(await page.locator('input[name="q"]').inputValue(), 'wwhooo');
     await context.close();

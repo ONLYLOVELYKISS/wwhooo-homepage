@@ -268,7 +268,7 @@ export function searchPage() {
         <div class="search-row">
           <span class="search-symbol" aria-hidden="true">⌕</span>
           <input id="search-query" name="q" type="search" placeholder="${t().searchPlaceholder}" autocomplete="off" required aria-keyshortcuts="/ Escape" />
-          <button type="submit">${t().searchSubmit}<span aria-hidden="true">↗</span></button>
+          <button type="submit" data-search-submit>${t().searchWith} Google<span aria-hidden="true">↗</span></button>
         </div>
         <div class="search-controls">
         <fieldset class="search-provider-control">
