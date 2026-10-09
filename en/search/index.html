@@ -137,8 +137,8 @@
         display: none !important;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-1UGk1tKe.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-LnVCvRso.css">
+    <script type="module" crossorigin src="/assets/index-DdM-Zv20.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DgE-GnNe.css">
   </head>
   <body>
     <!-- data-prerendered is filled in by scripts/build-routes.mjs and left empty
@@ -163,20 +163,53 @@
         <h1>Find what you<br><i>need.</i></h1>
         <p>Switch between familiar search engines and go straight to the results.</p>
       </div>
-      <form class="search-panel" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
-        <label for="search-query">What are you looking for?</label>
+      <form class="search-panel" role="search" aria-label="Search" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
+        <label class="search-query-label" for="search-query">What are you looking for?</label>
         <div class="search-row">
-          <input id="search-query" name="q" type="search" placeholder="What are you looking for?" autocomplete="off" required />
+          <span class="search-symbol" aria-hidden="true">⌕</span>
+          <input id="search-query" name="q" type="search" placeholder="What are you looking for?" autocomplete="off" required aria-keyshortcuts="/ Escape" />
           <button type="submit">Search<span aria-hidden="true">↗</span></button>
         </div>
-        <label class="search-provider-label" for="search-provider">Search engine</label>
-        <select id="search-provider" class="search-provider-select" data-search-provider>
-          <option value="https://www.google.com/search">Google</option>
-          <option value="https://www.bing.com/search">Bing</option>
-          <option value="https://duckduckgo.com/">DuckDuckGo</option>
-          <option value="https://github.com/search">GitHub</option>
-        </select>
+        <div class="search-controls">
+          <div class="search-provider-control">
+            <label class="search-provider-label" for="search-provider">Search engine</label>
+            <select id="search-provider" class="search-provider-select" data-search-provider>
+              <option value="https://www.google.com/search">Google</option>
+              <option value="https://www.bing.com/search">Bing</option>
+              <option value="https://duckduckgo.com/">DuckDuckGo</option>
+              <option value="https://github.com/search">GitHub</option>
+            </select>
+          </div>
+          <span class="search-shortcut"><kbd>/</kbd> Press / to focus search, Esc to clear</span>
+        </div>
+        <p class="search-privacy">Queries are sent directly to the selected search provider; this site does not store them.</p>
       </form>
+      <section class="search-guide" aria-labelledby="search-guide-title">
+        <div class="search-guide-heading">
+          <span class="kicker">SEARCH / NOTES</span>
+          <h2 id="search-guide-title">Search with precision</h2>
+          <p>Add an operator to narrow your results.</p>
+        </div>
+        <ul class="search-operators">
+          <li>
+                <button type="button" data-query-template="site:developer.mozilla.org">
+                  <code>site:developer.mozilla.org</code><span>Limit to a site</span><b aria-hidden="true">+</b>
+                </button>
+              </li><li>
+                <button type="button" data-query-template="&quot;flexible box layout&quot;">
+                  <code>"flexible box layout"</code><span>Exact phrase</span><b aria-hidden="true">+</b>
+                </button>
+              </li><li>
+                <button type="button" data-query-template="-template">
+                  <code>-template</code><span>Exclude a term</span><b aria-hidden="true">+</b>
+                </button>
+              </li><li>
+                <button type="button" data-query-template="filetype:pdf">
+                  <code>filetype:pdf</code><span>Limit by file type</span><b aria-hidden="true">+</b>
+                </button>
+              </li>
+        </ul>
+      </section>
     </section></main><footer>
       <span>© 2026 LINN</span>
       <span>WW / PERSONAL ENGINE</span>
