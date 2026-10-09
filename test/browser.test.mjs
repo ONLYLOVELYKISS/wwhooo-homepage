@@ -59,7 +59,7 @@ async function open(
     if (message.type() === 'error') errors.push(message.text());
   });
   page.on('pageerror', (error) => errors.push(String(error)));
-  await page.goto(`${site.url}${path}`, { waitUntil: 'load' });
+  await page.goto(`${site.url}${path}`, { waitUntil: 'domcontentloaded' });
   return { context, page, errors };
 }
 
@@ -228,6 +228,46 @@ test('the search site works in both language trees', async () => {
     ]);
     await context.close();
   }
+});
+
+test('engine entries filter by name and purpose', async () => {
+  const { context, page } = await open('/engine/');
+  const filter = page.locator('[data-tool-filter]');
+  assert.equal(await page.locator('[data-tool-entry]').count(), 9);
+  await filter.fill('兼容');
+  assert.equal(await page.locator('[data-tool-entry]:visible').count(), 1);
+  assert.equal(await page.locator('[data-tool-entry]:visible strong').textContent(), 'Can I Use');
+  assert.equal(await page.locator('[data-tool-group]:visible').count(), 1);
+  await filter.fill('does-not-exist');
+  assert.equal(await page.locator('[data-tool-entry]:visible').count(), 0);
+  assert.ok(await page.locator('[data-tool-filter-empty]').isVisible());
+  await context.close();
+});
+
+test('search quick routes focus an empty query and open encoded destinations', async () => {
+  const { context, page } = await open('/en/search/', { viewport: { width: 390, height: 844 } });
+  await page.locator('[data-search-route]').first().click();
+  await expectFocused(page, '#search-query');
+  await page.locator('#search-query').fill('maps & cafes');
+  await page.evaluate(() => {
+    window.open = (url) => {
+      window.__lastSearchRoute = url;
+      return null;
+    };
+  });
+  await page.locator('[data-search-route][data-search-param="query"]').click();
+  const route = new URL(await page.evaluate(() => window.__lastSearchRoute));
+  assert.equal(route.origin, 'https://www.google.com');
+  assert.equal(route.pathname, '/maps/search');
+  assert.equal(route.searchParams.get('query'), 'maps & cafes');
+  assert.equal(
+    await page.locator('.search-quick-grid').evaluate((el) => {
+      const columns = getComputedStyle(el).gridTemplateColumns.split(' ');
+      return columns.length === 2 && columns[0] === columns[1];
+    }),
+    true,
+  );
+  await context.close();
 });
 
 test('provider radios retain native arrow-key grouping', async () => {

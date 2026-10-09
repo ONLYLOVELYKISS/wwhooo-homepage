@@ -222,11 +222,13 @@ export function home() {
 export function engine() {
   const groups = engineGroups
     .map(
-      (group) => `<section>
+      (group) => `<section data-tool-group>
           <h2>${group.title}</h2>
           ${group.items
             .map(
-              (item) => `<a class="tool-row" href="${item.url}" target="_blank" rel="noopener noreferrer">
+              (
+                item,
+              ) => `<a class="tool-row" data-tool-entry data-tool-search="${`${group.title} ${item.name} ${text(item.note)}`.toLowerCase()}" href="${item.url}" target="_blank" rel="noopener noreferrer">
               <strong>${item.name}</strong>
               <span>${text(item.note)}</span>
               <b aria-hidden="true">↗</b>
@@ -243,6 +245,12 @@ export function engine() {
         <h1>${t().engineHeading}</h1>
         <p>${t().engineIntro}</p>
       </div>
+      <div class="tool-filter" role="search">
+        <label for="tool-filter-query">${t().engineFilterLabel}</label>
+        <input id="tool-filter-query" type="search" data-tool-filter placeholder="${t().engineFilterPlaceholder}" autocomplete="off" />
+        <span class="tool-filter-count" data-tool-filter-count aria-live="polite"></span>
+      </div>
+      <p class="tool-filter-empty" data-tool-filter-empty hidden>${t().engineFilterEmpty}</p>
       <div class="tool-groups">${groups}</div>
     </section>`,
     'engine',
@@ -298,7 +306,20 @@ export function searchPage() {
         </div>
         <p class="search-privacy">${t().searchPrivacy}</p>
       </form>
-      <section class="search-guide" aria-labelledby="search-guide-title">
+      <section class="search-quick" aria-labelledby="search-quick-title">
+         <div>
+           <span class="kicker">SEARCH / ROUTES</span>
+           <h2 id="search-quick-title">${t().searchCategories}</h2>
+           <p>${t().searchCategoryHint}</p>
+         </div>
+         <div class="search-quick-grid">
+           <button type="button" data-search-route="https://www.google.com/search" data-search-param="q" data-search-label="${t().searchCategoryWeb}"><span>⌕</span><b>${t().searchCategoryWeb}</b><small>!web</small></button>
+           <button type="button" data-search-route="https://www.google.com/search?tbm=isch" data-search-param="q" data-search-label="${t().searchCategoryImages}"><span>▧</span><b>${t().searchCategoryImages}</b><small>!images</small></button>
+           <button type="button" data-search-route="https://www.google.com/maps/search" data-search-param="query" data-search-label="${t().searchCategoryMaps}"><span>⌖</span><b>${t().searchCategoryMaps}</b><small>!map</small></button>
+           <button type="button" data-search-route="https://github.com/search" data-search-param="q" data-search-label="${t().searchCategoryCode}"><span>&lt;/&gt;</span><b>${t().searchCategoryCode}</b><small>!code</small></button>
+         </div>
+       </section>
+       <section class="search-guide" aria-labelledby="search-guide-title">
         <div class="search-guide-heading">
           <span class="kicker">SEARCH / NOTES</span>
           <h2 id="search-guide-title">${t().searchOperators}</h2>

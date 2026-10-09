@@ -70,6 +70,53 @@ function initTheme() {
   });
 }
 
+function initEngineFilter() {
+  const input = document.querySelector('[data-tool-filter]');
+  const entries = [...document.querySelectorAll('[data-tool-entry]')];
+  if (!input || !entries.length || input.dataset.ready) return;
+  input.dataset.ready = 'true';
+  const empty = document.querySelector('[data-tool-filter-empty]');
+  const count = document.querySelector('[data-tool-filter-count]');
+  const update = () => {
+    const query = input.value.trim().toLowerCase();
+    let visible = 0;
+    entries.forEach((entry) => {
+      const match = !query || entry.dataset.toolSearch?.includes(query);
+      entry.hidden = !match;
+      if (match) visible += 1;
+    });
+    document.querySelectorAll('[data-tool-group]').forEach((group) => {
+      group.hidden = !group.querySelector('[data-tool-entry]:not([hidden])');
+    });
+    if (empty) empty.hidden = visible > 0;
+    if (count) count.textContent = query ? `${visible}/${entries.length}` : '';
+  };
+  input.addEventListener('input', update);
+  update();
+}
+
+function initSearchRoutes() {
+  const form = document.querySelector('[data-search-form]');
+  const input = form?.querySelector('input[name="q"]');
+  if (!form || !input) return;
+  document.querySelectorAll('[data-search-route]').forEach((button) => {
+    if (button.dataset.ready) return;
+    button.dataset.ready = 'true';
+    button.addEventListener('click', () => {
+      const value = input.value.trim();
+      if (!value) {
+        input.focus();
+        return;
+      }
+      const route = button.dataset.searchRoute;
+      const param = button.dataset.searchParam ?? 'q';
+      const url = new URL(route);
+      url.searchParams.set(param, value);
+      window.open(url, '_blank', 'noopener');
+    });
+  });
+}
+
 function initSearch() {
   const form = document.querySelector('[data-search-form]');
   const input = form?.querySelector('input[name="q"]');
@@ -155,6 +202,8 @@ function initInteractions() {
   initGate();
   initRail();
   initSearch();
+  initEngineFilter();
+  initSearchRoutes();
 }
 
 onAfterRender(initInteractions);

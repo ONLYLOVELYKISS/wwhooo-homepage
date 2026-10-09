@@ -431,8 +431,109 @@ img {
   outline-offset: 2px;
 }
 html.no-js .search-provider-hint,
-html.no-js .search-provider-option:not(.is-selected) {
+html.no-js .search-provider-option:not(.is-selected),
+html.no-js .tool-filter,
+html.no-js .search-quick {
   display: none;
+}
+.tool-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 620px;
+  margin: 34px 0 42px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-strong);
+}
+.tool-filter label {
+  color: var(--muted);
+  font: 500 10px var(--mono);
+  white-space: nowrap;
+}
+.tool-filter input {
+  min-width: 0;
+  flex: 1;
+  padding: 9px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 400 13px var(--sans);
+}
+.tool-filter input::placeholder {
+  color: var(--muted-light);
+}
+.tool-filter-count {
+  min-width: 38px;
+  color: var(--muted);
+  font: 400 10px var(--mono);
+  text-align: right;
+}
+.tool-filter-empty {
+  margin: -20px 0 32px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.tool-row[hidden],
+.tool-groups [data-tool-group][hidden] {
+  display: none;
+}
+.search-quick {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.3fr);
+  gap: 26px;
+  max-width: 920px;
+  margin-top: clamp(42px, 6vw, 72px);
+  padding: 22px 0;
+  border-block: 1px solid var(--line-strong);
+}
+.search-quick h2 {
+  margin: 12px 0 8px;
+  font:
+    400 clamp(1.6rem, 3vw, 2.3rem)/1 Instrument Serif,
+    Georgia,
+    serif;
+}
+.search-quick p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.search-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.search-quick-grid button {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  background: var(--surface-solid);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.search-quick-grid button:hover,
+.search-quick-grid button:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.search-quick-grid button > span {
+  color: var(--accent);
+  font: 500 16px var(--mono);
+}
+.search-quick-grid b {
+  font: 500 12px var(--mono);
+}
+.search-quick-grid small {
+  color: var(--muted);
+  font: 400 10px var(--mono);
 }
 .search-provider-option input {
   position: absolute;
@@ -549,6 +650,16 @@ html.no-js .search-provider-option:not(.is-selected) {
     align-items: start;
     flex-direction: column;
     gap: 14px;
+  }
+  .tool-filter {
+    margin: 26px 0 30px;
+  }
+  .search-quick {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .search-quick-grid {
+    grid-template-columns: 1fr 1fr;
   }
   .search-guide {
     display: block;
