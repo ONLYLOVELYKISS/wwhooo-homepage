@@ -271,15 +271,28 @@ export function searchPage() {
           <button type="submit">${t().searchSubmit}<span aria-hidden="true">↗</span></button>
         </div>
         <div class="search-controls">
-          <div class="search-provider-control">
-            <label class="search-provider-label" for="search-provider">${t().searchProvider}</label>
-            <select id="search-provider" class="search-provider-select" data-search-provider>
-              <option value="https://www.google.com/search">Google</option>
-              <option value="https://www.bing.com/search">Bing</option>
-              <option value="https://duckduckgo.com/">DuckDuckGo</option>
-              <option value="https://github.com/search">GitHub</option>
-            </select>
+        <fieldset class="search-provider-control">
+          <legend class="search-provider-label">${t().searchProvider}</legend>
+          <p class="search-provider-hint">${t().searchProviderHint}</p>
+          <div class="search-provider-options">
+            <label class="search-provider-option is-selected">
+              <input type="radio" name="search-provider" value="https://www.google.com/search" data-search-provider checked />
+              <span>Google</span>
+            </label>
+            <label class="search-provider-option">
+              <input type="radio" name="search-provider" value="https://www.bing.com/search" data-search-provider />
+              <span>Bing</span>
+            </label>
+            <label class="search-provider-option">
+              <input type="radio" name="search-provider" value="https://duckduckgo.com/" data-search-provider />
+              <span>DuckDuckGo</span>
+            </label>
+            <label class="search-provider-option">
+              <input type="radio" name="search-provider" value="https://github.com/search" data-search-provider />
+              <span>GitHub</span>
+            </label>
           </div>
+        </fieldset>
           <span class="search-shortcut"><kbd>/</kbd> ${t().searchShortcut}</span>
         </div>
         <p class="search-privacy">${t().searchPrivacy}</p>

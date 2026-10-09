@@ -178,9 +178,11 @@ test('the search site works in both language trees', async () => {
   for (const path of ['/search/', '/en/search/']) {
     const { context, page } = await open(path);
     assert.equal(await page.locator('[data-search-form]').count(), 1);
-    assert.equal(await page.locator('[data-search-provider] option').count(), 4);
-    await page.locator('[data-search-provider]').selectOption('https://www.bing.com/search');
+    assert.equal(await page.locator('[data-search-provider]').count(), 4);
+    assert.equal(await page.locator('[data-search-provider]:checked').inputValue(), 'https://www.google.com/search');
+    await page.locator('[data-search-provider][value="https://www.bing.com/search"]').check();
     assert.equal(await page.locator('[data-search-form]').getAttribute('action'), 'https://www.bing.com/search');
+    assert.ok(await page.locator('.search-provider-option.is-selected').filter({ hasText: 'Bing' }).count());
     await page.locator('input[name="q"]').fill('wwhooo');
     assert.equal(await page.locator('input[name="q"]').inputValue(), 'wwhooo');
     await context.close();
@@ -210,6 +212,7 @@ test('search controls remain responsive and progressively enhanced', async () =>
   const bounds = await mobile.page.locator('.search-panel').boundingBox();
   assert.ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 320, 'search panel must fit a narrow viewport');
   assert.equal(await mobile.page.locator('[data-search-form]').getAttribute('method'), 'get');
+  assert.equal(await mobile.page.locator('[data-search-provider]').count(), 4);
   assert.equal(await mobile.page.locator('[data-search-form]').getAttribute('action'), 'https://www.google.com/search');
   await mobile.context.close();
 
@@ -219,7 +222,7 @@ test('search controls remain responsive and progressively enhanced', async () =>
     await noScript.page.locator('[data-search-form]').getAttribute('action'),
     'https://www.google.com/search',
   );
-  assert.equal(await noScript.page.locator('[data-search-provider] option').count(), 4);
+  assert.equal(await noScript.page.locator('[data-search-provider]').count(), 4);
   await noScript.context.close();
 });
 

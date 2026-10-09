@@ -44,12 +44,15 @@ let searchShortcutReady = false;
 function initSearch() {
   const form = document.querySelector('[data-search-form]');
   const input = form?.querySelector('input[name="q"]');
-  const provider = form?.querySelector('[data-search-provider]');
-  if (!form || !input || !provider || form.dataset.ready) return;
+  const providers = form?.querySelectorAll('[data-search-provider]');
+  if (!form || !input || !providers?.length || form.dataset.ready) return;
   form.dataset.ready = 'true';
-  provider.addEventListener('change', () => {
+  const syncProvider = (provider) => {
     form.action = provider.value;
-  });
+    providers.forEach((option) => option.closest('label')?.classList.toggle('is-selected', option === provider));
+  };
+  providers.forEach((provider) => provider.addEventListener('change', () => syncProvider(provider)));
+  syncProvider(form.querySelector('[data-search-provider]:checked') ?? providers[0]);
   document.addEventListener('click', (event) => {
     const button = event.target.closest?.('[data-query-template]');
     if (!button) return;
