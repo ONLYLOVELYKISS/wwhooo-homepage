@@ -128,21 +128,24 @@ function landing() {
 
 function libraryCard(item) {
   return `<a class="library-card ${item.tone}" href="${pathFor(item.id, getLang())}">
-          <small>${item.name}</small>
+          <small><span class="card-index">${item.id === 'toy' ? '01' : '02'}</span>${item.name}</small>
           <strong>${text(item.title)}</strong>
+          <em>${text(item.desc)}</em>
           <span>${t().open} ↗</span>
         </a>`;
 }
 
 function librarySection() {
   const extra = `<a class="library-card sakura-card" href="${pathFor('works', getLang())}">
-          <small>SAKURA / IMAGE</small>
+          <small><span class="card-index">03</span>SAKURA / IMAGE</small>
           <strong>${text(photo.title)}</strong>
+          <em>${text(photo.note)}</em>
           <span>${t().open} ↗</span>
         </a>
         <a class="library-card engine-card" href="${pathFor('engine', getLang())}">
-          <small>ENGINE / LINKS</small>
+          <small><span class="card-index">04</span>ENGINE / LINKS</small>
           <strong>${text({ zh: '常用入口', en: 'Everyday links' })}</strong>
+          <em>${t().engineIntro}</em>
           <span>${t().open} ↗</span>
         </a>`;
   return `<section class="library-section" id="library">
@@ -184,6 +187,31 @@ function indexSection() {
       </section>`;
 }
 
+function featuredSection() {
+  const rows = projects
+    .map(
+      (project, index) => `<a class="featured-row" href="${project.url}" target="_blank" rel="noopener noreferrer">
+            <span class="featured-number">0${index + 1}</span>
+            <div>
+              <small>${project.stack} / ${project.period}</small>
+              <h3>${project.name}</h3>
+              <p>${text(project.desc)}</p>
+            </div>
+            <b aria-hidden="true">↗</b>
+          </a>`,
+    )
+    .join('');
+  return `<section class="featured-section">
+        <div class="section-label">
+          <span>02</span>
+          <h2>${t().featured}</h2>
+          <p>${t().featuredText}</p>
+        </div>
+        <div class="featured-list">${rows}</div>
+        <a class="section-action" href="${pathFor('works', getLang())}">${t().viewAllWorks} <span aria-hidden="true">↗</span></a>
+      </section>`;
+}
+
 function statementBand() {
   return `<section class="statement-band">
         <p>“${text(profile.statement)}”</p>
@@ -208,6 +236,7 @@ export function home() {
       <div class="home-content" id="home-content">
         ${landing()}
         ${librarySection()}
+        ${featuredSection()}
         ${indexSection()}
         ${statementBand()}
       </div>

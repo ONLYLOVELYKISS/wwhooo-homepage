@@ -225,6 +225,24 @@ test('subsite cards use a short title, not a full sentence', () => {
   assert.doesNotMatch(html, /<strong>阶段性实验、脚本和可以运行的小想法。<\/strong>/);
 });
 
+test('the homepage presents a bilingual featured-project path before its full index', () => {
+  const chinese = render('home', 'zh');
+  assert.match(chinese, /<h2>精选项目<\/h2>/);
+  assert.match(chinese, /class="featured-row" href="https:\/\/github\.com\/ONLYLOVELYKISS\/wwhooo-homepage"/);
+  assert.match(chinese, /class="section-action" href="\/works\/">查看全部作品/);
+  assert.ok(
+    chinese.indexOf('class="featured-section"') < chinese.indexOf('class="index-section"'),
+    'featured projects should appear before the general index',
+  );
+  assert.match(chinese, /class="card-index">03<\/span>SAKURA \/ IMAGE/);
+  assert.match(chinese, /<em>阶段性实验、脚本和可以运行的小想法。<\/em>/);
+
+  const english = render('home', 'en');
+  assert.match(english, /<h2>Selected projects<\/h2>/);
+  assert.match(english, /class="section-action" href="\/en\/works\/">View all works/);
+  assert.match(english, /<em>Experiments, scripts, and small ideas that actually run\.<\/em>/);
+});
+
 test('chaoxing-sign-cli is archived, not featured', () => {
   // Automating a third party's check-in flow is a compliance grey area, so it
   // must not appear in the featured project list.
