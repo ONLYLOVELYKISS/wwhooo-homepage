@@ -22,6 +22,14 @@ const { ALL_PATHS, HTML_LANG, INDEXABLE_PATHS, OG_LOCALE, ROUTE_DEFS, SITE_URL, 
 
 const escapeRe = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+test('the build emits the standalone Skye search homepage', async () => {
+  const html = await read('search.html');
+  assert.match(html, /<title>Skye 搜索<\/title>/);
+  assert.match(html, /<h1 class="brand" aria-label="Skye">/);
+  assert.match(html, /action="https:\/\/www\.google\.com\/search"[\s\S]*method="get"/);
+  assert.match(html, /name="q" type="search"/);
+});
+
 test('the build produced one HTML file per route, per language', async () => {
   await stat(join(dist, 'index.html'));
   for (const routePath of ALL_PATHS) {

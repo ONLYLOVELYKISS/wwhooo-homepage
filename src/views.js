@@ -295,46 +295,34 @@ export function searchPage() {
   ];
   return page(
     `<section class="inner-page search-page">
-      <div class="page-intro">
-        <span class="kicker">05 / SEARCH</span>
-        <h1>${t().searchHeading}</h1>
-        <p>${t().searchIntro}</p>
-      </div>
-      <form id="search-provider-state" hidden></form>
-      <form class="search-panel" role="search" aria-label="${t().search}" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
-        <label class="search-query-label" for="search-query">${t().searchPlaceholder}</label>
-        <div class="search-row">
-          <span class="search-symbol" aria-hidden="true">⌕</span>
-          <input id="search-query" name="q" type="search" placeholder="${t().searchPlaceholder}" autocomplete="off" required aria-keyshortcuts="/ Escape" />
-          <button type="submit" data-search-submit>${t().searchWith} Google<span aria-hidden="true">↗</span></button>
-        </div>
-        <div class="search-controls">
-        <fieldset class="search-provider-control" aria-describedby="search-provider-hint">
-          <legend class="search-provider-label">${t().searchProvider}</legend>
-          <p class="search-provider-hint" id="search-provider-hint">${t().searchProviderHint}</p>
-          <div class="search-provider-options">
-            <label class="search-provider-option is-selected">
-              <input type="radio" name="search-provider" form="search-provider-state" value="https://www.google.com/search" data-search-provider checked disabled />
-              <span>Google</span>
-            </label>
-            <label class="search-provider-option">
-              <input type="radio" name="search-provider" form="search-provider-state" value="https://www.bing.com/search" data-search-provider disabled />
-              <span>Bing</span>
-            </label>
-            <label class="search-provider-option">
-              <input type="radio" name="search-provider" form="search-provider-state" value="https://duckduckgo.com/" data-search-provider disabled />
-              <span>DuckDuckGo</span>
-            </label>
-            <label class="search-provider-option">
-              <input type="radio" name="search-provider" form="search-provider-state" value="https://github.com/search" data-search-provider disabled />
-              <span>GitHub</span>
-            </label>
+      <div class="google-home">
+        <div class="google-logo" aria-label="Google"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
+        <p class="google-welcome">${t().searchIntro}</p>
+        <form id="search-provider-state" hidden></form>
+        <form class="search-panel" role="search" aria-label="${t().search}" data-search-form action="https://www.google.com/search" method="get" target="_blank" rel="noopener">
+          <label class="sr-only" for="search-query">${t().searchPlaceholder}</label>
+          <div class="search-row">
+            <span class="search-symbol" aria-hidden="true">⌕</span>
+            <input id="search-query" name="q" type="search" placeholder="${t().searchPlaceholder}" autocomplete="off" required aria-keyshortcuts="/ Escape" />
+            <span class="search-mic" aria-hidden="true">♩</span>
           </div>
-        </fieldset>
-          <span class="search-shortcut"><kbd>/</kbd> ${t().searchShortcut}</span>
-        </div>
+          <div class="search-actions">
+            <button type="submit" data-search-submit>${t().searchSubmit}<span aria-hidden="true">↗</span></button>
+            <button type="button" data-search-route="https://www.google.com/search" data-search-param="q" data-search-label="${t().searchSubmit}">${t().searchLucky}</button>
+          </div>
+          <details class="search-provider-control">
+            <summary>${t().searchProvider}</summary>
+            <div class="search-provider-options">
+              <label class="search-provider-option is-selected"><input type="radio" name="search-provider" form="search-provider-state" value="https://www.google.com/search" data-search-provider checked disabled /><span>Google</span></label>
+              <label class="search-provider-option"><input type="radio" name="search-provider" form="search-provider-state" value="https://www.bing.com/search" data-search-provider disabled /><span>Bing</span></label>
+              <label class="search-provider-option"><input type="radio" name="search-provider" form="search-provider-state" value="https://duckduckgo.com/" data-search-provider disabled /><span>DuckDuckGo</span></label>
+              <label class="search-provider-option"><input type="radio" name="search-provider" form="search-provider-state" value="https://github.com/search" data-search-provider disabled /><span>GitHub</span></label>
+            </div>
+          </details>
+        </form>
+        <p class="search-shortcut"><kbd>/</kbd> ${t().searchShortcut}</p>
         <p class="search-privacy">${t().searchPrivacy}</p>
-      </form>
+      </div>
       <section class="search-quick" aria-labelledby="search-quick-title">
          <div>
            <span class="kicker">SEARCH / ROUTES</span>
@@ -349,22 +337,8 @@ export function searchPage() {
          </div>
        </section>
        <section class="search-guide" aria-labelledby="search-guide-title">
-        <div class="search-guide-heading">
-          <span class="kicker">SEARCH / NOTES</span>
-          <h2 id="search-guide-title">${t().searchOperators}</h2>
-          <p>${t().searchOperatorIntro}</p>
-        </div>
-        <ul class="search-operators">
-          ${operators
-            .map(
-              ([query, label, code]) => `<li>
-                <button type="button" data-query-template="${query.trimEnd().replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">
-                  <code>${code}</code><span>${label}</span><b aria-hidden="true">+</b>
-                </button>
-              </li>`,
-            )
-            .join('')}
-        </ul>
+        <div class="search-guide-heading"><span class="kicker">SEARCH / NOTES</span><h2 id="search-guide-title">${t().searchOperators}</h2><p>${t().searchOperatorIntro}</p></div>
+        <ul class="search-operators">${operators.map(([query, label, code]) => `<li><button type="button" data-query-template="${query.trimEnd().replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"><code>${code}</code><span>${label}</span><b aria-hidden="true">+</b></button></li>`).join('')}</ul>
       </section>
     </section>`,
     'search',

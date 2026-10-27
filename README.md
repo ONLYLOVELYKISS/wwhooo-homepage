@@ -1,5 +1,7 @@
 # wwhooo-homepage
 
+历史迭代评审快照见 [`docs/review-snapshot.md`](docs/review-snapshot.md)。
+
 `wwhooo.com` 的个人主页源码。Vite 构建静态站点，GitHub Actions 发布到 `deploy` 分支，**Debian 服务器拉取该分支后由 Nginx 直接托管**（前面是 Cloudflare Tunnel）。
 
 ## 目录结构

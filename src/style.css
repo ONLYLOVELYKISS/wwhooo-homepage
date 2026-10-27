@@ -292,10 +292,47 @@ img {
   text-transform: uppercase;
 }
 
-.search-page .page-intro {
+.search-page {
+  min-height: min(720px, calc(100vh - 190px));
+}
+.google-home {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   max-width: 760px;
+  margin: clamp(30px, 8vh, 88px) auto 0;
+  text-align: center;
+}
+.google-logo {
+  margin-bottom: 22px;
+  font:
+    400 clamp(4.2rem, 10vw, 7.2rem)/0.9 Arial,
+    sans-serif;
+  letter-spacing: -0.1em;
+  user-select: none;
+}
+.google-logo span:nth-child(1),
+.google-logo span:nth-child(4) {
+  color: #4285f4;
+}
+.google-logo span:nth-child(2),
+.google-logo span:nth-child(6) {
+  color: #ea4335;
+}
+.google-logo span:nth-child(3) {
+  color: #fbbc05;
+}
+.google-logo span:nth-child(5) {
+  color: #34a853;
+}
+.google-welcome {
+  max-width: 540px;
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 13px;
 }
 .search-panel {
+  width: min(100%, 640px);
   max-width: 920px;
   margin-top: clamp(32px, 4vw, 58px);
   padding: clamp(22px, 4vw, 40px);
@@ -314,12 +351,13 @@ img {
 }
 .search-row {
   display: grid;
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(0, 1fr) 30px;
   align-items: center;
-  min-height: 66px;
-  padding: 6px;
-  border: 1px solid var(--line-strong);
-  border-radius: 9px;
+  min-height: 58px;
+  padding: 5px 10px;
+  border: 1px solid rgba(60, 64, 67, 0.28);
+  border-radius: 30px;
+  box-shadow: 0 2px 8px rgba(60, 64, 67, 0.12);
   background: var(--surface-solid);
   transition:
     border-color 160ms ease,
@@ -351,6 +389,48 @@ img {
 }
 .search-row input::-webkit-search-cancel-button {
   cursor: pointer;
+}
+.search-mic {
+  display: grid;
+  place-items: center;
+  color: #4285f4;
+  font-size: 18px;
+}
+.search-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+.search-actions button {
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: #f8f9fa;
+  color: var(--ink);
+  cursor: pointer;
+  font: 500 11px var(--mono);
+}
+.search-actions button:hover,
+.search-actions button:focus-visible {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-sm);
+}
+.search-provider-control {
+  margin: 18px auto 0;
+  border: 0;
+  color: var(--ink);
+  font: 11px var(--mono);
+}
+.search-provider-control summary {
+  cursor: pointer;
+}
+.search-provider-options {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
 }
 .search-row button {
   display: inline-flex;
