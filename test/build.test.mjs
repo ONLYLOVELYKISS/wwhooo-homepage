@@ -24,10 +24,14 @@ const escapeRe = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 test('the build emits the standalone Skye search homepage', async () => {
   const html = await read('search.html');
-  assert.match(html, /<title>Skye 搜索<\/title>/);
+  assert.match(html, /<title>Skye · Private Space<\/title>/);
   assert.match(html, /<h1 class="brand" aria-label="Skye">/);
   assert.match(html, /action="https:\/\/www\.google\.com\/search"[\s\S]*method="get"/);
-  assert.match(html, /name="q" type="search"/);
+  assert.match(html, /name="q"/);
+  assert.match(html, /name="engine"[\s\S]*form="engine-state"/);
+  assert.match(html, /<form id="engine-state" hidden><\/form>/);
+  assert.match(html, /data-search-context[^>]*>web<\/span>/);
+  assert.match(html, /localStorage\.getItem\('skye-search-engine'\)/);
 });
 
 test('the build produced one HTML file per route, per language', async () => {

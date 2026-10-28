@@ -170,11 +170,13 @@
       .brand {
         margin: 0 0 25px;
         color: var(--text);
-        font-size: clamp(4.4rem, 10vw, 7.2rem);
-        font-weight: 600;
-        letter-spacing: -0.12em;
-        line-height: 0.86;
-        text-shadow: 0 8px 24px rgba(73, 96, 135, 0.16);
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(4.2rem, 9vw, 6.6rem);
+        font-weight: 500;
+        font-style: italic;
+        letter-spacing: -0.09em;
+        line-height: 0.9;
+        text-shadow: 0 8px 24px rgba(73, 96, 135, 0.12);
         user-select: none;
       }
       .brand span:nth-child(1) {
@@ -217,6 +219,16 @@
         clip: rect(0, 0, 0, 0);
         white-space: nowrap;
         border: 0;
+      }
+      .engine-picker::before {
+        width: 100%;
+        margin-bottom: 3px;
+        color: var(--muted);
+        content: '搜索范围';
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-align: center;
+        text-transform: uppercase;
       }
       .engine-option span {
         min-height: 34px;
@@ -359,7 +371,7 @@
       .engine-caption {
         margin: 18px 0 0;
         color: var(--muted);
-        font-size: 11px;
+        font-size: 12px;
         letter-spacing: 0.04em;
         text-align: center;
       }
@@ -406,7 +418,7 @@
           padding: 8px 10px 8px 14px;
         }
         .topbar-brand {
-          font-size: 12px;
+          font-size: 18px;
         }
         .topbar-nav {
           gap: 10px;
@@ -460,7 +472,7 @@
       <span class="topbar-brand">skye</span>
       <nav class="topbar-nav" aria-label="私人主页导航">
         <a href="/">主页</a>
-        <a href="/search/">工具</a>
+        <a href="/search/" aria-current="page">搜索</a>
       </nav>
     </header>
     <main id="search" tabindex="-1">
@@ -474,38 +486,56 @@
         rel="noopener"
         role="search"
       >
-        <fieldset class="engine-picker" aria-label="选择搜索引擎">
-          <legend class="sr-only">选择搜索引擎</legend>
+        <fieldset class="engine-picker" form="engine-state" aria-label="选择搜索服务">
+          <legend class="sr-only">选择搜索服务</legend>
           <label class="engine-option"
-            ><input type="radio" name="engine" value="https://www.google.com/search" data-engine checked /><span
-              >Google</span
-            ></label
+            ><input
+              type="radio"
+              name="engine"
+              value="https://www.google.com/search"
+              form="engine-state"
+              data-engine
+              checked
+            /><span>Google</span></label
           >
           <label class="engine-option"
-            ><input type="radio" name="engine" value="https://www.bing.com/search" data-engine /><span
-              >Bing</span
-            ></label
+            ><input
+              type="radio"
+              name="engine"
+              value="https://www.bing.com/search"
+              form="engine-state"
+              data-engine
+            /><span>Bing</span></label
           >
           <label class="engine-option"
-            ><input type="radio" name="engine" value="https://duckduckgo.com/" data-engine /><span
+            ><input type="radio" name="engine" value="https://duckduckgo.com/" form="engine-state" data-engine /><span
               >DuckDuckGo</span
             ></label
           >
           <label class="engine-option"
-            ><input type="radio" name="engine" value="https://search.brave.com/search" data-engine /><span
-              >Brave</span
-            ></label
+            ><input
+              type="radio"
+              name="engine"
+              value="https://search.brave.com/search"
+              form="engine-state"
+              data-engine
+            /><span>Brave</span></label
           >
           <label class="engine-option"
-            ><input type="radio" name="engine" value="https://github.com/search" data-engine data-param="q" /><span
-              >GitHub</span
-            ></label
+            ><input
+              type="radio"
+              name="engine"
+              value="https://github.com/search"
+              form="engine-state"
+              data-engine
+              data-param="q"
+            /><span>Code</span></label
           >
         </fieldset>
         <div class="search-box">
           <span class="search-icon" aria-hidden="true">⌕</span>
           <label class="sr-only" for="query">搜索</label>
-          <span class="search-context" aria-hidden="true">web</span>
+          <span class="search-context" data-search-context aria-hidden="true">web</span>
           <input
             class="search-input"
             id="query"
@@ -519,10 +549,10 @@
         </div>
         <div class="actions">
           <button class="action-button action-primary" type="submit" data-search-submit>开始搜索</button>
-          <button class="action-button" type="submit" name="btnI" value="1">随便看看</button>
         </div>
-        <p class="engine-caption">选择一个入口，查询将直接发送至对应服务</p>
+        <p class="engine-caption" aria-live="polite">查询将直接发送至所选服务</p>
       </form>
+      <form id="engine-state" hidden></form>
       <p class="hint"><kbd>/</kbd> 快速聚焦搜索框 · <kbd>Esc</kbd> 清除内容</p>
     </main>
     <footer>
@@ -538,14 +568,17 @@
       const form = document.querySelector('.search-form');
       const clear = document.querySelector('.clear-button');
       const submit = form.querySelector('[data-search-submit]');
+      const context = form.querySelector('[data-search-context]');
       const engines = [...document.querySelectorAll('[data-engine]')];
-      const engineState = { action: form.action, param: 'q', label: 'Google' };
+      const engineState = { action: form.action, param: 'q', label: 'Google', scope: 'web' };
       const syncEngine = (engine) => {
         engineState.action = engine.value;
         engineState.param = engine.dataset.param ?? 'q';
         engineState.label = engine.nextElementSibling.textContent;
+        engineState.scope = engineState.label === 'Code' ? 'code' : 'web';
         form.action = engineState.action;
         submit.textContent = `使用 ${engineState.label}`;
+        context.textContent = engineState.scope;
         input.name = engineState.param;
       };
       engines.forEach((engine) => engine.addEventListener('change', () => syncEngine(engine)));
@@ -555,6 +588,24 @@
           input.focus();
         }
       });
+      let savedEngine = null;
+      try {
+        savedEngine = localStorage.getItem('skye-search-engine');
+      } catch {
+        // Private browsing or blocked storage should not disable search.
+      }
+      const initialEngine = engines.find((engine) => engine.value === savedEngine) ?? engines[0];
+      initialEngine.checked = true;
+      syncEngine(initialEngine);
+      engines.forEach((engine) =>
+        engine.addEventListener('change', () => {
+          try {
+            localStorage.setItem('skye-search-engine', engine.value);
+          } catch {
+            // The selected engine still applies for the current page.
+          }
+        }),
+      );
       clear.addEventListener('click', () => {
         input.value = '';
         input.focus();
